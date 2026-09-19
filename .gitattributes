@@ -1,2 +1,0 @@
-stats filter=lfs diff=lfs merge=lfs -text
-stat filter=lfs diff=lfs merge=lfs -text
