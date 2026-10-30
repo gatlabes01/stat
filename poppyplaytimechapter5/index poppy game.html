@@ -1,0 +1,1250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#050608">
+<title>Toy Factory Shift</title>
+<link rel="modulepreload" href="three.module.min.js">
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: none; background: #050608;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; color: #fff;
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: none;
+    -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; }
+  body { position: fixed; inset: 0; }
+  canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+  button { font: inherit; cursor: pointer; }
+
+  #cross { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%;
+    background: rgba(255,255,255,.85); box-shadow: 0 0 0 2px rgba(0,0,0,.35); pointer-events: none; }
+  #cross.hot { background: #ffd23f; width: 10px; height: 10px; margin: -5px 0 0 -5px; }
+
+  #hud { position: absolute; top: calc(8px + env(safe-area-inset-top)); left: calc(8px + env(safe-area-inset-left));
+    right: calc(8px + env(safe-area-inset-right)); display: flex; gap: 6px; justify-content: space-between; align-items: flex-start; pointer-events: none; }
+  .pill { padding: 6px 10px; border-radius: 10px; background: rgba(0,0,0,.55); font-size: 13px; line-height: 1.35; max-width: 70%; }
+  .pill b { color: #ffd23f; margin-right: 6px; }
+  .btns { display: flex; gap: 6px; pointer-events: auto; }
+  .btns button { padding: 6px 9px; border: 0; border-radius: 10px; font-size: 12px; font-weight: 700; color: #fff; background: rgba(0,0,0,.55); }
+  #status { position: absolute; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+    font-size: 13px; font-weight: 700; pointer-events: none; text-align: center; text-shadow: 0 1px 2px #000; }
+  #charge { width: 160px; height: 8px; margin: 4px auto 0; border-radius: 4px; background: rgba(255,255,255,.2); overflow: hidden; display: none; }
+  #charge i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #ff3b2f, #ffd23f); }
+  body.touch #status { bottom: calc(150px + env(safe-area-inset-bottom)); }
+
+  #toast { position: absolute; top: 30%; left: 50%; transform: translateX(-50%); padding: 8px 14px; border-radius: 10px;
+    background: rgba(0,0,0,.7); font-weight: 700; font-size: 14px; opacity: 0; transition: opacity .25s; pointer-events: none; text-align: center; max-width: 85%; }
+  #toast.show { opacity: 1; }
+  #titleCard { position: absolute; left: 0; right: 0; top: 36%; text-align: center; pointer-events: none; opacity: 0; transition: opacity 1s; }
+  #titleCard.show { opacity: 1; }
+  #titleCard small { letter-spacing: 6px; color: #ffd23f; font-weight: 800; font-size: 13px; }
+  #titleCard h2 { margin: 4px 0 0; font-size: clamp(24px, 7vw, 46px); font-family: Georgia, serif; font-style: italic; text-shadow: 0 3px 12px #000; }
+  #flash { position: absolute; inset: 0; background: radial-gradient(circle, rgba(140,0,0,0) 30%, rgba(160,0,0,.85)); opacity: 0; pointer-events: none; }
+  #hint { position: absolute; left: 50%; top: 62%; transform: translateX(-50%); padding: 7px 12px; border-radius: 10px;
+    background: rgba(0,0,0,.6); font-size: 12px; white-space: nowrap; pointer-events: none; transition: opacity .6s; }
+  #hint.gone { opacity: 0; }
+
+  .screen { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.72); }
+  .screen[hidden] { display: none; }
+  .card { width: min(88%, 360px); padding: 20px; border-radius: 14px; background: #15171c; border: 1px solid #333; text-align: center; }
+  .card h1 { margin: 0 0 8px; font-family: Georgia, serif; font-style: italic; font-size: 28px; color: #ffd23f; }
+  .card p { margin: 0 0 14px; font-size: 14px; color: #bbb; line-height: 1.45; }
+  .card button { display: block; width: 100%; margin-top: 8px; padding: 11px; border: 0; border-radius: 10px;
+    font-size: 15px; font-weight: 800; color: #fff; background: #c3262f; }
+  .card button.alt { background: #2b2f38; }
+  .card button:disabled { opacity: .4; cursor: default; }
+
+  #joy, #tbtns { position: absolute; display: none; touch-action: none; }
+  body.touch #joy, body.touch #tbtns { display: block; }
+  #joy { left: calc(16px + env(safe-area-inset-left)); bottom: calc(16px + env(safe-area-inset-bottom)); width: 112px; height: 112px;
+    border-radius: 50%; background: rgba(255,255,255,.1); border: 2px solid rgba(255,255,255,.3); }
+  #knob { position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; margin: -24px 0 0 -24px; border-radius: 50%; background: rgba(255,255,255,.55); pointer-events: none; }
+  #tbtns { right: calc(14px + env(safe-area-inset-right)); bottom: calc(16px + env(safe-area-inset-bottom)); width: 170px; height: 150px; }
+  #tbtns button { position: absolute; border-radius: 50%; border: 3px solid rgba(255,255,255,.55); color: #fff; font-weight: 900; font-size: 12px; touch-action: none; }
+  #bBlue { left: 0; bottom: 0; width: 76px; height: 76px; background: rgba(30,107,255,.6); }
+  #bRed { right: 0; bottom: 34px; width: 76px; height: 76px; background: rgba(214,40,40,.6); }
+  #bRun { left: 34px; top: 0; width: 56px; height: 56px; background: rgba(255,255,255,.18); }
+  #tbtns button.down { filter: brightness(1.5); }
+
+  #loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 10px;
+    font-weight: 800; background: #050608; transition: opacity .4s; }
+  #loading.done { opacity: 0; pointer-events: none; }
+  #loading i { width: 16px; height: 16px; border-radius: 50%; background: #c3262f; animation: pulse 1s infinite alternate; }
+  @keyframes pulse { to { transform: scale(.5); opacity: .4; } }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="cross"></div>
+<div id="hud">
+  <div class="pill"><b id="chap">CH 1</b><span id="goal"></span></div>
+  <div class="btns"><button id="chBtn">Chapters</button><button id="soundBtn">Sound on</button></div>
+</div>
+<div id="status"><span id="statusText"></span><div id="charge"><i id="chargeBar"></i></div></div>
+<div id="toast"></div>
+<div id="titleCard"><small id="tcTop"></small><h2 id="tcName"></h2></div>
+<div id="flash"></div>
+<div id="hint">Click to look around · WASD move · Shift run · Left click / Q = blue hand · Right click / E = red hand</div>
+<div id="joy"><div id="knob"></div></div>
+<div id="tbtns"><button id="bRun">RUN</button><button id="bBlue">BLUE</button><button id="bRed">RED</button></div>
+<div id="card" class="screen" hidden><div class="card"><h1 id="cardTitle"></h1><p id="cardText"></p><div id="cardBtns"></div></div></div>
+<div id="loading"><i></i><span id="loadText">Clocking in…</span></div>
+
+<script type="module">
+const $ = id => document.getElementById(id);
+const THREE = await import('./three.module.min.js')
+  .catch(() => import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js'))
+  .catch(() => null);
+if (!THREE) {
+  $('loadText').textContent = 'Could not load the game. Please refresh.';
+  throw new Error('three.js failed to load');
+}
+const V3 = THREE.Vector3;
+const isTouch = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+};
+
+// ---------- renderer ----------
+const canvas = $('game');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !isTouch, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, isTouch ? 1.25 : 1.5));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+canvas.addEventListener('webglcontextlost', e => e.preventDefault());
+canvas.addEventListener('webglcontextrestored', () => location.reload());
+
+const scene = new THREE.Scene();
+const BG = new THREE.Color(0x050608);
+scene.background = BG;
+scene.fog = new THREE.Fog(0x050608, 4, 34);
+const camera = new THREE.PerspectiveCamera(72, 1, 0.05, 80);
+camera.rotation.order = 'YXZ';
+scene.add(camera);
+const hemi = new THREE.HemisphereLight(0x8899aa, 0x221a14, 0.4);
+scene.add(hemi);
+const flashlight = new THREE.SpotLight(0xfff1d0, 30, 26, Math.PI / 5.5, 0.55, 1.4);
+flashlight.position.set(0.15, -0.1, 0.9);
+flashlight.target.position.set(0, -0.08, -1);
+camera.add(flashlight, flashlight.target);
+// hands live on layer 1 and are drawn in a second pass so they never sink into walls
+hemi.layers.enable(1);
+flashlight.layers.enable(1);
+
+// ---------- textures ----------
+function canvasTex(w, h, draw) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.anisotropy = 4;
+  return t;
+}
+function grime(g, w, h, blobs = 30, strength = 0.35) {
+  for (let i = 0; i < blobs; i++) {
+    const x = Math.random() * w, y = Math.random() * h, r = 10 + Math.random() * w * 0.2;
+    const gr = g.createRadialGradient(x, y, 0, x, y, r);
+    gr.addColorStop(0, `rgba(25,18,10,${strength * Math.random()})`);
+    gr.addColorStop(1, 'rgba(25,18,10,0)');
+    g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2);
+  }
+  for (let i = 0; i < w * h / 40; i++) {
+    g.fillStyle = `rgba(0,0,0,${Math.random() * 0.18})`;
+    g.fillRect(Math.random() * w, Math.random() * h, 1 + Math.random() * 2, 1);
+  }
+}
+const floorTex = canvasTex(256, 256, (g, w, h) => {
+  const s = w / 4;
+  for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) {
+    g.fillStyle = (x + y) % 2 ? '#2d4f7a' : '#d8cfb8';
+    g.fillRect(x * s, y * s, s, s);
+  }
+  g.strokeStyle = 'rgba(0,0,0,.35)'; g.lineWidth = 2;
+  for (let i = 0; i <= 4; i++) { g.beginPath(); g.moveTo(i * s, 0); g.lineTo(i * s, h); g.moveTo(0, i * s); g.lineTo(w, i * s); g.stroke(); }
+  grime(g, w, h, 40, 0.5);
+});
+const wallTex = canvasTex(256, 256, (g, w, h) => {
+  g.fillStyle = '#6f8290'; g.fillRect(0, 0, w, h);
+  g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 2;
+  for (let x = 0; x <= w; x += 64) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h * 0.62); g.stroke(); }
+  g.fillStyle = '#e3b23c'; g.fillRect(0, h * 0.6, w, h * 0.05);
+  g.fillStyle = '#a8322d'; g.fillRect(0, h * 0.65, w, h * 0.35);
+  g.fillStyle = 'rgba(255,255,255,.08)';
+  for (let x = 0; x < w; x += 32) g.fillRect(x, h * 0.65, 14, h * 0.35);
+  grime(g, w, h, 30, 0.55);
+  const drip = g.createLinearGradient(0, 0, 0, h);
+  drip.addColorStop(0, 'rgba(0,0,0,.35)'); drip.addColorStop(0.3, 'rgba(0,0,0,0)');
+  g.fillStyle = drip; g.fillRect(0, 0, w, h);
+});
+const ceilTex = canvasTex(128, 128, (g, w, h) => {
+  g.fillStyle = '#26282c'; g.fillRect(0, 0, w, h);
+  g.strokeStyle = 'rgba(0,0,0,.5)'; g.strokeRect(0, 0, w, h);
+  grime(g, w, h, 10, 0.4);
+});
+const doorTex = canvasTex(256, 256, (g, w, h) => {
+  g.fillStyle = '#4a4f57'; g.fillRect(0, 0, w, h);
+  for (let i = -h; i < w + h; i += 36) {
+    g.fillStyle = '#e3b23c';
+    g.beginPath(); g.moveTo(i, 0); g.lineTo(i + 18, 0); g.lineTo(i + 18 - 40, 40); g.lineTo(i - 40, 40); g.fill();
+    g.beginPath(); g.moveTo(i, h - 40); g.lineTo(i + 18, h - 40); g.lineTo(i + 18 - 40, h); g.lineTo(i - 40, h); g.fill();
+  }
+  g.fillStyle = '#3a3e45';
+  for (let y = 60; y < h - 50; y += 28) g.fillRect(16, y, w - 32, 14);
+  grime(g, w, h, 16, 0.5);
+});
+const exitTex = canvasTex(256, 96, (g, w, h) => {
+  g.fillStyle = '#0b3d16'; g.fillRect(0, 0, w, h);
+  g.fillStyle = '#7dff9a'; g.font = '900 64px Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText('EXIT', w / 2, h / 2 + 4);
+});
+exitTex.wrapS = exitTex.wrapT = THREE.ClampToEdgeWrapping;
+
+const M = {
+  floor: new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.8 }),
+  wall: new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.9 }),
+  ceil: new THREE.MeshStandardMaterial({ map: ceilTex, roughness: 1 }),
+  door: new THREE.MeshStandardMaterial({ map: doorTex, roughness: 0.6, metalness: 0.3 }),
+  metal: new THREE.MeshStandardMaterial({ color: 0x3c4148, roughness: 0.45, metalness: 0.7 }),
+  darkMetal: new THREE.MeshStandardMaterial({ color: 0x1d2024, roughness: 0.5, metalness: 0.6 }),
+  redGlow: new THREE.MeshStandardMaterial({ color: 0x400000, emissive: 0xff2a1a, emissiveIntensity: 1.6 }),
+  greenGlow: new THREE.MeshStandardMaterial({ color: 0x003a10, emissive: 0x35ff6a, emissiveIntensity: 1.6 }),
+  yellowGlow: new THREE.MeshStandardMaterial({ color: 0x403000, emissive: 0xffd23f, emissiveIntensity: 2 }),
+  blueGlow: new THREE.MeshStandardMaterial({ color: 0x001a40, emissive: 0x3fa9ff, emissiveIntensity: 1.8 }),
+  lamp: new THREE.MeshStandardMaterial({ color: 0x222222, emissive: 0xffe2b0, emissiveIntensity: 2.5 }),
+  wood: new THREE.MeshStandardMaterial({ color: 0x8a5a32, roughness: 0.9 }),
+  exit: new THREE.MeshBasicMaterial({ map: exitTex }),
+  knob: new THREE.MeshStandardMaterial({ color: 0xc3262f, roughness: 0.4 }),
+};
+
+// ---------- chapters ----------
+const CELL = 3, WALL_H = 5, EYE = 1.65, PR = 0.35;
+const CHAPTERS = [
+  {
+    top: 'CHAPTER 1', name: 'Wake-Up Shift', yaw: -Math.PI / 2, ambient: 0.35,
+    goal: isTouch ? 'Aim at the lever and tap BLUE to pull it.' : 'Aim at the lever and left-click (or Q) to pull it.',
+    lamps: [[2, 2, 1], [2, 8, 1], [7, 8, 1], [10, 8, 1], [5, 5, 0.6, true]],
+    map: [
+      '#############',
+      '#...#.......#',
+      '#.S.D...G...#',
+      '#.L.#.......#',
+      '#####.#####.#',
+      '    #.#   #.#',
+      '    #.#####.#',
+      '    #...R...#',
+      '    ####E####',
+      '    #.......#',
+      '    #...X...#',
+      '    #########',
+    ],
+  },
+  {
+    top: 'CHAPTER 2', name: 'Lanky Lou', yaw: Math.PI, ambient: 0.25,
+    goal: 'Find the keycard.',
+    lamps: [[2, 2, 0.9], [2, 7, 0.9], [4, 3, 0.7, true], [9, 5, 0.6, true], [11, 5, 0.6], [13, 6, 0.8, true]],
+    map: [
+      '###########',
+      '#...#.....#',
+      '#.S.#..K..#',
+      '#.........#',
+      '#..M..#####',
+      '#.....#',
+      '###D###',
+      '  #.#',
+      '  #.######',
+      '  #......#',
+      '  ######.#',
+      '  #......#',
+      '  #.######',
+      '  #.C...L#',
+      '  ######X#',
+      '       ###',
+    ],
+  },
+  {
+    top: 'CHAPTER 3', name: 'Lights Out', yaw: -Math.PI / 2, ambient: 0.06, machine: true,
+    goal: 'Collect 4 batteries and power the machine.',
+    lamps: [[4, 7, 0.5, true], [9, 6, 0.4], [1, 1, 0.3], [1, 13, 0.3, true], [7, 1, 0.3], [7, 13, 0.3]],
+    lampColor: 0xff6a5a,
+    map: [
+      '###############',
+      '#B....#.....B.#',
+      '#.##..#..##...#',
+      '#.##.....##.P.#',
+      '#.....P.......#',
+      '#..#...R...#..#',
+      '#..#.......#..#',
+      '#P....##....P.#',
+      '#.##..##..##..#',
+      '#B....S....#B.#',
+      '######E########',
+      '     #.#',
+      '     #X#',
+      '     ###',
+    ],
+  },
+];
+
+// ---------- monster ----------
+function makeMonster(color, handColor) {
+  const g = new THREE.Group();
+  const fur = new THREE.MeshStandardMaterial({ color, roughness: 1 });
+  const glove = new THREE.MeshStandardMaterial({ color: handColor, roughness: 0.9 });
+  const white = new THREE.MeshStandardMaterial({ color: 0xf4f1e8, roughness: 0.35 });
+  const black = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.3 });
+  const lips = new THREE.MeshStandardMaterial({ color: 0xb3122a, roughness: 0.45 });
+  const add = (geo, mat, x, y, z, parent = g) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); parent.add(m); return m; };
+  const limb = (x, y, len, r, mat, endMat, endR) => {
+    const p = new THREE.Group(); p.position.set(x, y, 0); g.add(p);
+    add(new THREE.CylinderGeometry(r, r * 0.85, len, 8), mat, 0, -len / 2, 0, p);
+    add(new THREE.SphereGeometry(endR, 10, 8), endMat, 0, -len, 0.05, p);
+    return p;
+  };
+  const legL = limb(-0.24, 1.9, 1.85, 0.17, fur, glove, 0.22);
+  const legR = limb(0.24, 1.9, 1.85, 0.17, fur, glove, 0.22);
+  add(new THREE.CapsuleGeometry(0.42, 1.0, 4, 12), fur, 0, 2.7, 0);
+  const armL = limb(-0.55, 3.25, 2.5, 0.11, fur, glove, 0.24);
+  const armR = limb(0.55, 3.25, 2.5, 0.11, fur, glove, 0.24);
+  const head = new THREE.Group(); head.position.y = 3.95; g.add(head);
+  add(new THREE.SphereGeometry(0.56, 18, 14), fur, 0, 0, 0, head).scale.set(1, 0.92, 0.95);
+  for (const s of [-1, 1]) {
+    add(new THREE.SphereGeometry(0.15, 12, 10), white, s * 0.21, 0.14, 0.42, head);
+    add(new THREE.SphereGeometry(0.065, 8, 6), black, s * 0.21, 0.14, 0.56, head);
+  }
+  add(new THREE.BoxGeometry(0.78, 0.26, 0.16), lips, 0, -0.2, 0.46, head);
+  add(new THREE.BoxGeometry(0.66, 0.14, 0.1), black, 0, -0.2, 0.5, head);
+  const tooth = new THREE.ConeGeometry(0.035, 0.1, 4);
+  for (let i = 0; i < 9; i++) {
+    const x = -0.28 + i * 0.07;
+    add(tooth, white, x, -0.15, 0.55, head).rotation.x = Math.PI;
+    add(tooth, white, x + 0.035, -0.25, 0.55, head);
+  }
+  return { g, legL, legR, armL, armR, head, phase: 0 };
+}
+
+// ---------- grab-hands ----------
+function makeHand(color) {
+  const g = new THREE.Group();
+  const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.45, emissive: 0x000000 });
+  const box = (w, h, d, x, y, z) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); g.add(m); return m; };
+  box(0.14, 0.05, 0.15, 0, 0, 0);
+  for (let i = 0; i < 4; i++) box(0.028, 0.03, 0.1, -0.048 + i * 0.032, 0, -0.12);
+  box(0.035, 0.07, 0.07, 0, -0.005, 0.1);
+  g.userData.mat = mat;
+  return g;
+}
+function makeHandSlot(color, side) {
+  const g = makeHand(color);
+  const thumb = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.03, 0.08), g.userData.mat);
+  thumb.position.set(-side * 0.085, 0, -0.04); thumb.rotation.y = side * 0.5; g.add(thumb);
+  const home = new V3(side * 0.3, -0.3, -0.55);
+  g.position.copy(home);
+  g.rotation.x = -0.15;
+  g.traverse(o => o.layers.set(1));
+  camera.add(g);
+  const wireGeo = new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(6), 3));
+  const wire = new THREE.Line(wireGeo, new THREE.LineBasicMaterial({ color: 0x15171a }));
+  wire.frustumCulled = false;
+  wire.layers.set(1);
+  wire.visible = false;
+  camera.add(wire);
+  return { g, home, wire, state: 'idle', t: 0, dist: 1, target: new V3(), it: null, root: new V3(side * 0.28, -0.42, -0.2) };
+}
+const hands = { blue: makeHandSlot(0x1e6bff, -1), red: makeHandSlot(0xd62828, 1) };
+
+// ---------- level building ----------
+let L = null;
+const player = { pos: new V3(), yaw: 0, pitch: 0, bob: 0, stepDist: 0 };
+let charge = 0;
+const CHARGE_T = 9;
+
+const cellX = c => c * CELL + CELL / 2;
+const cellOf = p => [Math.floor(p.x / CELL), Math.floor(p.z / CELL)];
+const keyOf = (c, r) => c + ',' + r;
+const ch = (c, r) => (L.grid[r] && L.grid[r][c]) || ' ';
+
+function solidCell(c, r) {
+  const k = ch(c, r);
+  if (k === '#' || k === ' ') return true;
+  const d = L.doors.get(keyOf(c, r));
+  if (d && !d.open) return true;
+  return L.blocked.has(keyOf(c, r));
+}
+
+function track(obj, it) {
+  obj.userData.it = it;
+  L.rayTargets.push(obj);
+  return it;
+}
+
+function wallMount(c, r) {
+  for (const [dc, dr] of [[1, 0], [-1, 0], [0, -1], [0, 1]]) {
+    if (ch(c + dc, r + dr) === '#') return { dc, dr };
+  }
+  return null;
+}
+
+function buildLevel(idx, cp = null) {
+  if (L) {
+    scene.remove(L.group);
+    L.group.traverse(o => { if (o.geometry && !o.userData.keepGeo) o.geometry.dispose(); });
+  }
+  const def = CHAPTERS[idx];
+  const H = def.map.length, W = Math.max(...def.map.map(r => r.length));
+  L = {
+    idx, def, W, H, grid: def.map.map(r => r.padEnd(W, ' ').split('')),
+    group: new THREE.Group(), doors: new Map(), blocked: new Set(), rayTargets: [], colliders: [], lamps: [], levers: [],
+    pickups: [], patrol: [], flags: {}, monster: null, cp, carried: [], delivered: cp ? cp.delivered || 0 : 0,
+    deliveredIds: new Set(cp ? cp.deliveredIds || [] : []), done: false, time: 0,
+  };
+  scene.add(L.group);
+  const G = L.group;
+  hemi.intensity = def.ambient;
+
+  const fw = W * CELL, fh = H * CELL;
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(fw, fh), M.floor);
+  floor.rotation.x = -Math.PI / 2; floor.position.set(fw / 2, 0, fh / 2);
+  M.floor.map.repeat.set(fw / 6, fh / 6);
+  const ceil = new THREE.Mesh(new THREE.PlaneGeometry(fw, fh), M.ceil);
+  ceil.rotation.x = Math.PI / 2; ceil.position.set(fw / 2, WALL_H, fh / 2);
+  M.ceil.map.repeat.set(fw / 3, fh / 3);
+  G.add(floor, ceil);
+  L.rayTargets.push(floor, ceil);
+
+  const walls = [];
+  for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) if (L.grid[r][c] === '#') walls.push([c, r]);
+  const wallMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(CELL, WALL_H, CELL), M.wall, walls.length);
+  const mtx = new THREE.Matrix4();
+  walls.forEach(([c, r], i) => wallMesh.setMatrixAt(i, mtx.makeTranslation(cellX(c), WALL_H / 2, cellX(r))));
+  G.add(wallMesh);
+  L.rayTargets.push(wallMesh);
+
+  let start = null;
+  for (let r = 0; r < H; r++) for (let c = 0; c < W; c++) {
+    const k = L.grid[r][c], x = cellX(c), z = cellX(r), key = keyOf(c, r);
+    if (k === 'S') start = new V3(x, 0, z);
+    else if (k === 'D' || k === 'E') {
+      const alongX = ch(c - 1, r) === '#' && ch(c + 1, r) === '#';
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(alongX ? CELL : 0.3, WALL_H, alongX ? 0.3 : CELL), M.door);
+      mesh.position.set(x, WALL_H / 2, z);
+      G.add(mesh);
+      const door = track(mesh, { type: 'door', kind: k, mesh, open: false, lift: 0 });
+      L.doors.set(key, door);
+    } else if (k === 'L') {
+      const mt = wallMount(c, r) || { dc: 1, dr: 0 };
+      const base = new THREE.Group();
+      base.position.set(x + mt.dc * (CELL / 2 - 0.12), 1.45, z + mt.dr * (CELL / 2 - 0.12));
+      base.rotation.y = Math.atan2(-mt.dc, -mt.dr);
+      const plate = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.1, 0.12), M.darkMetal);
+      const pivot = new THREE.Group(); pivot.position.set(0, 0, 0.08); pivot.rotation.x = 0.5;
+      const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.75, 8), M.metal);
+      stick.position.y = 0.37;
+      const knob = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 10), M.knob);
+      knob.position.y = 0.78;
+      const light = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6), M.redGlow);
+      light.position.set(0, -0.4, 0.08);
+      pivot.add(stick, knob);
+      base.add(plate, pivot, light);
+      G.add(base);
+      L.levers.push(track(base, { type: 'lever', pivot, light, pulled: false }));
+    } else if (k === 'G') {
+      const gen = new THREE.Group(); gen.position.set(x, 0, z);
+      const body = new THREE.Mesh(new THREE.BoxGeometry(1.4, 2.1, 1.4), M.metal); body.position.y = 1.05;
+      const coil = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.9, 14), M.yellowGlow); coil.position.y = 2.55;
+      const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.15, 14), M.darkMetal); cap.position.y = 3.05;
+      const pl = new THREE.PointLight(0xffd23f, 8, 7, 1.5); pl.position.y = 2.6;
+      gen.add(body, coil, cap, pl);
+      G.add(gen);
+      L.colliders.push({ x0: x - 0.8, x1: x + 0.8, z0: z - 0.8, z1: z + 0.8 });
+      track(gen, { type: 'generator', coil });
+    } else if (k === 'R' && def.machine) {
+      const mac = new THREE.Group(); mac.position.set(x, 0, z);
+      const body = new THREE.Mesh(new THREE.BoxGeometry(1.8, 2.4, 1.8), M.metal); body.position.y = 1.2;
+      mac.add(body);
+      const slots = [];
+      for (let i = 0; i < 4; i++) {
+        const s = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.5, 0.06), i < L.delivered ? M.greenGlow : M.redGlow);
+        s.position.set(-0.54 + i * 0.36, 1.7, 0.92);
+        const s2 = s.clone(); s2.position.z = -0.92;
+        mac.add(s, s2); slots.push([s, s2]);
+      }
+      G.add(mac);
+      L.colliders.push({ x0: x - 1, x1: x + 1, z0: z - 1, z1: z + 1 });
+      track(mac, { type: 'machine', slots });
+    } else if (k === 'R') {
+      const mt = wallMount(c, r) || { dc: 0, dr: -1 };
+      const rec = new THREE.Group();
+      rec.position.set(x + mt.dc * (CELL / 2 - 0.15), 1.7, z + mt.dr * (CELL / 2 - 0.15));
+      rec.rotation.y = Math.atan2(-mt.dc, -mt.dr);
+      const plate = new THREE.Mesh(new THREE.BoxGeometry(1, 1.2, 0.25), M.darkMetal);
+      const socket = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.12, 14), M.redGlow);
+      socket.rotation.x = Math.PI / 2; socket.position.z = 0.16;
+      rec.add(plate, socket);
+      G.add(rec);
+      track(rec, { type: 'receiver', socket, powered: false });
+    } else if (k === 'K' || k === 'B') {
+      const id = key;
+      if (k === 'B' && L.deliveredIds.has(id)) continue;
+      const mesh = k === 'K'
+        ? new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.04, 0.3), M.blueGlow)
+        : new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.5, 12), M.greenGlow);
+      mesh.position.set(x, 1.1, z);
+      if (k === 'K') mesh.rotation.x = 0.4;
+      G.add(mesh);
+      const it = track(mesh, { type: 'pickup', kind: k === 'K' ? 'key' : 'battery', id, mesh, taken: false });
+      L.pickups.push(it);
+    } else if (k === 'M') {
+      if (!(cp && cp.chase)) {
+        const statue = makeMonster(0x6b3fa0, 0xf2c94c);
+        statue.g.position.set(x, 0, z);
+        statue.g.rotation.y = -Math.PI / 4;
+        statue.armL.rotation.z = -0.25; statue.armR.rotation.z = 0.25;
+        G.add(statue.g);
+        L.statue = statue;
+      }
+      L.monsterHome = new V3(x, 0, z);
+    } else if (k === 'C') {
+      L.crateCell = [c, r];
+    } else if (k === 'X') {
+      const sign = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.52), M.exit);
+      const mt = wallMount(c, r);
+      if (mt) {
+        sign.position.set(x + mt.dc * (CELL / 2 - 0.02), 3.4, z + mt.dr * (CELL / 2 - 0.02));
+        sign.rotation.y = Math.atan2(-mt.dc, -mt.dr);
+      } else sign.position.set(x, 3.4, z);
+      G.add(sign);
+      L.exitCell = [c, r];
+    } else if (k === 'P') L.patrol.push([c, r]);
+  }
+
+  for (const [r, c, power, flicker] of def.lamps) {
+    const light = new THREE.PointLight(def.lampColor || 0xffd9a0, 22 * power, 15, 1.6);
+    light.position.set(cellX(c), WALL_H - 0.6, cellX(r));
+    const bulb = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.08, 0.3), M.lamp);
+    bulb.position.set(cellX(c), WALL_H - 0.05, cellX(r));
+    G.add(light, bulb);
+    L.lamps.push({ light, base: light.intensity, flicker: !!flicker, f: 1 });
+  }
+
+  player.pos.copy(start);
+  player.yaw = def.yaw;
+  player.pitch = 0;
+  charge = 0;
+  for (const h of Object.values(hands)) { h.state = 'idle'; h.t = 0; h.wire.visible = false; h.g.position.copy(h.home); }
+
+  if (idx === 1 && cp && cp.chase) {
+    L.flags.hasKey = true;
+    openDoor('D', true);
+    L.flags.chase = true;
+    player.pos.set(cellX(5), 0, cellX(9));
+    player.yaw = -Math.PI / 2;
+    setTimeout(() => { if (L.idx === 1 && L.cp === cp) spawnMonster(cellX(3), cellX(6), 6.1, 0.9); }, 600);
+  }
+  if (idx === 2) {
+    const [pc, pr] = L.patrol[0];
+    spawnMonster(cellX(pc), cellX(pr), 5.2, 4, true);
+  }
+
+  $('chap').textContent = def.top.replace('CHAPTER', 'CH');
+  setGoal(idx === 1 && cp && cp.chase ? 'RUN! Reach the lever at the end!' : def.goal);
+  if (idx === 2 && L.delivered) setGoal(`Power the machine: ${L.delivered}/4 batteries delivered.`);
+  updateStatus();
+  store.set('tf-chapter', String(idx));
+  if (!cp) showTitle(def.top, def.name);
+}
+
+function openDoor(kind, instant = false) {
+  for (const d of L.doors.values()) if (d.kind === kind && !d.open) {
+    d.open = true;
+    if (instant) { d.lift = 1; d.mesh.position.y = WALL_H / 2 + WALL_H * 0.92; }
+    else sfx('door');
+  }
+}
+
+function spawnMonster(x, z, speed, delay, patrol = false) {
+  const pink = L.idx === 2;
+  const m = makeMonster(pink ? 0xe86fa8 : 0x6b3fa0, pink ? 0xfff0f6 : 0xf2c94c);
+  m.g.position.set(x, 0, z);
+  if (pink) m.g.scale.setScalar(0.85);
+  L.group.add(m.g);
+  Object.assign(m, { speed, wait: delay, state: patrol ? 'patrol' : 'chase', path: null, repath: 0, pIdx: 1, lost: 0, fall: 0 });
+  L.monster = m;
+  if (!patrol) { sfx('roar'); flickerAll(1.2); }
+}
+
+// ---------- pathfinding / sight ----------
+function bfs(from, to) {
+  const [fc, fr] = from, [tc, tr] = to;
+  if (solidCell(tc, tr)) return null;
+  const prev = new Map([[keyOf(fc, fr), null]]);
+  const q = [[fc, fr]];
+  while (q.length) {
+    const [c, r] = q.shift();
+    if (c === tc && r === tr) {
+      const path = [];
+      for (let k = keyOf(c, r); k; k = prev.get(k)) path.unshift(k.split(',').map(Number));
+      return path;
+    }
+    for (const [dc, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const nc = c + dc, nr = r + dr, k = keyOf(nc, nr);
+      if (!prev.has(k) && !solidCell(nc, nr)) { prev.set(k, keyOf(c, r)); q.push([nc, nr]); }
+    }
+  }
+  return null;
+}
+function lineOfSight(a, b) {
+  const d = Math.hypot(b.x - a.x, b.z - a.z), n = Math.ceil(d / 0.5);
+  for (let i = 1; i < n; i++) {
+    const t = i / n;
+    if (solidCell(Math.floor((a.x + (b.x - a.x) * t) / CELL), Math.floor((a.z + (b.z - a.z) * t) / CELL))) return false;
+  }
+  return true;
+}
+
+// ---------- interactions ----------
+const ray = new THREE.Raycaster();
+const center = new THREE.Vector2(0, 0);
+function findIt(o) { while (o) { if (o.userData.it) return o.userData.it; o = o.parent; } return null; }
+function aimed() {
+  ray.setFromCamera(center, camera);
+  ray.far = 22;
+  const hit = ray.intersectObjects(L.rayTargets, true)[0];
+  return hit ? { point: hit.point, it: findIt(hit.object), dist: hit.distance } : null;
+}
+
+function fire(which) {
+  const h = hands[which];
+  if (h.state !== 'idle' || !canPlay()) return;
+  hideHint();
+  camera.updateMatrixWorld();
+  const hit = aimed();
+  h.target.copy(hit ? hit.point : ray.ray.at(22, new V3()));
+  h.it = hit ? hit.it : null;
+  h.dist = Math.max(1, camera.position.distanceTo(h.target));
+  h.state = 'out'; h.t = 0;
+  h.wire.visible = true;
+  sfx('zip');
+}
+
+function handHit(it, which) {
+  if (which === 'red' && charge > 0 && (!it || (it.type !== 'receiver' && it.type !== 'generator'))) {
+    charge = 0; toast('The power fizzled out...'); sfx('deny'); updateStatus();
+  }
+  if (!it) return;
+  if (it.type === 'lever') {
+    if (it.pulled) return;
+    it.pulled = true; it.light.material = M.greenGlow;
+    sfx('clunk');
+    onEvent('lever', it);
+  } else if (it.type === 'generator') {
+    if (which !== 'red') { toast('Power only flows through the RED hand.'); sfx('deny'); return; }
+    charge = CHARGE_T; sfx('power'); toast('Hand charged! Quick, find the receiver.'); updateStatus();
+  } else if (it.type === 'receiver') {
+    if (it.powered) return;
+    if (which === 'red' && charge > 0) {
+      it.powered = true; charge = 0; it.socket.material = M.greenGlow;
+      sfx('poweron'); updateStatus();
+      onEvent('receiver', it);
+    } else { toast(which === 'red' ? 'It needs power from the generator.' : 'Use the RED hand to carry power.'); sfx('deny'); }
+  } else if (it.type === 'pickup') {
+    collect(it);
+  } else if (it.type === 'door') {
+    if (L.idx === 1 && it.kind === 'D' && !it.open) {
+      if (L.flags.hasKey) { openDoor('D'); onEvent('door'); }
+      else { toast('Locked. It needs a keycard.'); sfx('deny'); }
+    } else if (!it.open) { toast('It won\'t budge.'); sfx('deny'); }
+  } else if (it.type === 'machine') {
+    if (!L.carried.length) { toast('Bring batteries here.'); sfx('deny'); return; }
+    for (const id of L.carried) L.deliveredIds.add(id);
+    L.delivered += L.carried.length; L.carried = [];
+    it.slots.forEach((s, i) => { if (i < L.delivered) { s[0].material = M.greenGlow; s[1].material = M.greenGlow; } });
+    L.cp = { delivered: L.delivered, deliveredIds: [...L.deliveredIds] };
+    sfx('poweron');
+    onEvent('deposit');
+  }
+}
+
+function collect(it) {
+  if (it.taken) return;
+  it.taken = true;
+  L.group.remove(it.mesh);
+  L.rayTargets.splice(L.rayTargets.indexOf(it.mesh), 1);
+  sfx('pickup');
+  if (it.kind === 'key') { L.flags.hasKey = true; onEvent('key'); }
+  else { L.carried.push(it.id); onEvent('battery'); }
+  updateStatus();
+}
+
+function onEvent(type) {
+  const i = L.idx;
+  if (i === 0) {
+    if (type === 'lever') { openDoor('D'); setGoal(isTouch ? 'Charge the RED hand at the generator (tap RED).' : 'Charge the RED hand at the generator (right-click / E).'); }
+    if (type === 'receiver') { openDoor('E'); setGoal('The gate is open. Head to the EXIT.'); }
+  } else if (i === 1) {
+    if (type === 'key') {
+      setGoal('Use the keycard on the big door (fire a hand at it).');
+      if (L.statue) {
+        flickerAll(1.5); sfx('sting');
+        setTimeout(() => { if (L.statue) { L.group.remove(L.statue.g); L.statue = null; toast('...where did it go?'); } }, 700);
+      }
+    }
+    if (type === 'door') setGoal('Keep going...');
+    if (type === 'lever') {
+      L.flags.trap = true;
+      if (L.monster) { toast('Trap armed! Lure it under the crate!'); setGoal('Lure it under the crate, then get to the EXIT!'); }
+      else setGoal('Get to the EXIT!');
+    }
+  } else if (i === 2) {
+    if (type === 'battery') setGoal(`Carrying ${L.carried.length}. Bring them to the machine (fire a hand at it).`);
+    if (type === 'deposit') {
+      if (L.delivered >= 4) { openDoor('E'); setGoal('Power restored! Escape through the gate!'); toast('The gate is opening!'); }
+      else setGoal(`Power the machine: ${L.delivered}/4 batteries delivered.`);
+    }
+  }
+}
+
+function dropCrate() {
+  if (!L.crateCell) return;
+  const [c, r] = L.crateCell;
+  const crate = new THREE.Mesh(new THREE.BoxGeometry(2.8, 2.8, 2.8), M.wood);
+  crate.position.set(cellX(c), WALL_H + 1.5, cellX(r));
+  L.group.add(crate);
+  L.crate = { mesh: crate, v: 0, landed: false };
+}
+
+function flickerAll(sec) { L.flickerT = sec; }
+
+// ---------- HUD ----------
+function setGoal(t) { $('goal').textContent = t; }
+function updateStatus() {
+  let txt = '';
+  if (L.idx === 2) txt = `Batteries carried: ${L.carried.length} · delivered: ${L.delivered}/4`;
+  if (charge > 0) txt = 'POWER CHARGED';
+  $('statusText').textContent = txt;
+  $('charge').style.display = charge > 0 ? 'block' : 'none';
+}
+let toastT = 0;
+function toast(msg) {
+  const el = $('toast'); el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 2200);
+}
+let titleT = 0;
+function showTitle(top, name) {
+  $('tcTop').textContent = top; $('tcName').textContent = name;
+  $('titleCard').classList.add('show');
+  clearTimeout(titleT); titleT = setTimeout(() => $('titleCard').classList.remove('show'), 3200);
+}
+const hint = $('hint');
+let hintGone = false;
+function hideHint() { if (!hintGone) { hintGone = true; hint.classList.add('gone'); } }
+setTimeout(hideHint, 14000);
+
+let cardOpen = false;
+function showCard(title, text, buttons) {
+  cardOpen = true;
+  releaseInput();
+  if (document.pointerLockElement) document.exitPointerLock();
+  $('cardTitle').textContent = title;
+  $('cardText').textContent = text;
+  const box = $('cardBtns'); box.innerHTML = '';
+  for (const b of buttons) {
+    const el = document.createElement('button');
+    el.textContent = b.label;
+    if (b.alt) el.className = 'alt';
+    if (b.disabled) el.disabled = true;
+    el.onclick = () => { $('card').hidden = true; cardOpen = false; b.fn(); };
+    box.appendChild(el);
+  }
+  $('card').hidden = false;
+}
+let unlocked = Math.max(1, Number(store.get('tf-unlocked')) || 1);
+function showChapters() {
+  showCard('Chapters', 'Pick a chapter. Finish one to unlock the next.', [
+    ...CHAPTERS.map((c, i) => ({ label: `${c.top}: ${c.name}${i >= unlocked ? ' (locked)' : ''}`, disabled: i >= unlocked, fn: () => buildLevel(i) })),
+    { label: 'Back', alt: true, fn: () => {} },
+  ]);
+}
+function completeChapter() {
+  L.done = true;
+  sfx('win');
+  const next = L.idx + 1;
+  if (next < CHAPTERS.length) {
+    unlocked = Math.max(unlocked, next + 1);
+    store.set('tf-unlocked', String(unlocked));
+    showCard('Chapter complete', `You survived "${L.def.name}".`, [
+      { label: `Next: ${CHAPTERS[next].name}`, fn: () => buildLevel(next) },
+      { label: 'Replay chapter', alt: true, fn: () => buildLevel(L.idx) },
+    ]);
+  } else {
+    showCard('You escaped!', 'You made it out of the toy factory... for now.', [
+      { label: 'Play again from Chapter 1', fn: () => buildLevel(0) },
+      { label: 'Chapters', alt: true, fn: showChapters },
+    ]);
+  }
+}
+
+// ---------- caught ----------
+let scare = 0;
+function caught() {
+  if (scare > 0 || L.done) return;
+  scare = 1.5;
+  releaseInput();
+  const m = L.monster;
+  const f = new V3(-Math.sin(player.yaw), 0, -Math.cos(player.yaw));
+  player.pitch = 0;
+  const s = m.g.scale.x;
+  m.g.position.set(player.pos.x + f.x * 1.05, EYE - 3.95 * s - 0.05, player.pos.z + f.z * 1.05);
+  m.g.rotation.set(0, Math.atan2(-f.x, -f.z), 0);
+  sfx('scream');
+}
+function afterScare() {
+  $('flash').style.opacity = 0;
+  const cp = L.cp;
+  showCard('Caught!', 'It got you. Try again?', [
+    { label: 'Try again', fn: () => buildLevel(L.idx, cp) },
+    { label: 'Chapters', alt: true, fn: showChapters },
+  ]);
+}
+
+// ---------- update ----------
+const keys = {};
+const joy = { x: 0, y: 0 };
+let running = false, raf = 0, last = 0, time = 0;
+const canPlay = () => running && !cardOpen && scare <= 0 && L && !L.done;
+
+function collides(x, z) {
+  const r = PR;
+  if (solidCell(Math.floor((x - r) / CELL), Math.floor((z - r) / CELL)) || solidCell(Math.floor((x + r) / CELL), Math.floor((z - r) / CELL)) ||
+      solidCell(Math.floor((x - r) / CELL), Math.floor((z + r) / CELL)) || solidCell(Math.floor((x + r) / CELL), Math.floor((z + r) / CELL))) return true;
+  return L.colliders.some(c => x + r > c.x0 && x - r < c.x1 && z + r > c.z0 && z - r < c.z1);
+}
+
+function updatePlayer(dt) {
+  let ix = (keys.right ? 1 : 0) - (keys.left ? 1 : 0) + joy.x;
+  let iz = (keys.fwd ? 1 : 0) - (keys.back ? 1 : 0) + joy.y;
+  const len = Math.hypot(ix, iz);
+  if (len > 1) { ix /= len; iz /= len; }
+  const run = keys.run || touchRun;
+  const speed = (run ? 6.8 : 4.2) * Math.min(1, len);
+  const sy = Math.sin(player.yaw), cy = Math.cos(player.yaw);
+  const n = len > 0.01 ? 1 / Math.max(len, 1e-6) : 0;
+  const dx = (-sy * iz + cy * ix) * n * speed * dt, dz = (-cy * iz - sy * ix) * n * speed * dt;
+  const ox = player.pos.x, oz = player.pos.z;
+  if (!collides(player.pos.x + dx, player.pos.z)) player.pos.x += dx;
+  if (!collides(player.pos.x, player.pos.z + dz)) player.pos.z += dz;
+  const moved = Math.hypot(player.pos.x - ox, player.pos.z - oz);
+  player.bob += moved * (run ? 2.2 : 2.6);
+  player.stepDist += moved;
+  if (player.stepDist > (run ? 2.3 : 1.9)) { player.stepDist = 0; sfx('step', run ? 1 : 0.6); }
+}
+
+function updateHands(dt) {
+  const sway = Math.sin(player.bob) * 0.012;
+  for (const [name, h] of Object.entries(hands)) {
+    if (h.state === 'out') {
+      h.t = Math.min(1, h.t + dt * 30 / h.dist);
+      if (h.t >= 1) { h.state = 'back'; handHit(h.it, name); if (h.it && h.it.type !== 'pickup') sfx('clank'); }
+    } else if (h.state === 'back') {
+      h.t = Math.max(0, h.t - dt * 34 / h.dist);
+      if (h.t <= 0) { h.state = 'idle'; h.wire.visible = false; }
+    }
+    const home = h.home;
+    if (h.t > 0) {
+      const local = camera.worldToLocal(h.target.clone());
+      const e = 1 - Math.pow(1 - h.t, 2);
+      h.g.position.lerpVectors(home, local, e);
+      const p = h.wire.geometry.attributes.position;
+      p.setXYZ(0, h.root.x, h.root.y, h.root.z);
+      p.setXYZ(1, h.g.position.x, h.g.position.y, h.g.position.z + 0.08);
+      p.needsUpdate = true;
+    } else {
+      h.g.position.set(home.x, home.y + sway * (name === 'blue' ? 1 : -1), home.z);
+    }
+    const m = h.g.userData.mat;
+    if (name === 'red' && charge > 0) m.emissive.setRGB(0.9 + Math.sin(time * 18) * 0.3, 0.6, 0.05);
+    else m.emissive.copy(m.color).multiplyScalar(0.18);
+  }
+}
+
+function animateMonster(m, dt, moving) {
+  m.phase += dt * (moving ? 7 : 1.5);
+  const s = Math.sin(m.phase);
+  m.legL.rotation.x = moving ? s * 0.7 : 0;
+  m.legR.rotation.x = moving ? -s * 0.7 : 0;
+  m.armL.rotation.x = moving ? -s * 0.9 - 0.3 : Math.sin(m.phase) * 0.08;
+  m.armR.rotation.x = moving ? s * 0.9 - 0.3 : -Math.sin(m.phase) * 0.08;
+  m.head.rotation.z = Math.sin(m.phase * 0.5) * 0.12;
+}
+
+function updateMonster(dt) {
+  const m = L.monster;
+  if (!m) return;
+  if (scare > 0) { m.head.rotation.z = Math.sin(time * 40) * 0.15; return; }
+  if (m.state === 'dead') {
+    m.fall = Math.min(1, m.fall + dt * 1.6);
+    m.g.rotation.x = -m.fall * Math.PI / 2;
+    m.g.position.y = -m.fall * 0.6;
+    return;
+  }
+  if (m.wait > 0) { m.wait -= dt; animateMonster(m, dt, false); return; }
+  const mp = m.g.position, pp = player.pos;
+  const dist = Math.hypot(mp.x - pp.x, mp.z - pp.z);
+  const s = m.g.scale.x;
+
+  if (L.idx === 2) {
+    const sees = dist < 16 && lineOfSight(mp, pp);
+    if (sees) {
+      if (m.state !== 'chase') { sfx('roar'); toast('IT SEES YOU! RUN!'); }
+      m.state = 'chase'; m.lost = 0;
+    } else if (m.state === 'chase' && (m.lost += dt) > 5) m.state = 'patrol';
+  }
+
+  let target;
+  if (m.state === 'chase') target = cellOf(pp);
+  else {
+    target = L.patrol[m.pIdx % L.patrol.length];
+    const [mc, mr] = cellOf(mp);
+    if (mc === target[0] && mr === target[1]) { m.pIdx++; target = L.patrol[m.pIdx % L.patrol.length]; }
+  }
+  if ((m.repath -= dt) <= 0) { m.path = bfs(cellOf(mp), target); m.repath = 0.3; }
+
+  let gx, gz;
+  if (m.path && m.path.length > 1) { gx = cellX(m.path[1][0]); gz = cellX(m.path[1][1]); }
+  else if (m.path && m.state === 'chase') { gx = pp.x; gz = pp.z; }
+  if (gx === undefined) { animateMonster(m, dt, false); return; }
+  const dx = gx - mp.x, dz = gz - mp.z, d = Math.hypot(dx, dz);
+  const sp = m.state === 'chase' ? m.speed : 2.3;
+  if (d > 0.05) {
+    const step = Math.min(d, sp * dt);
+    mp.x += dx / d * step; mp.z += dz / d * step;
+    let dr = Math.atan2(dx, dz) - m.g.rotation.y;
+    dr = Math.atan2(Math.sin(dr), Math.cos(dr));
+    m.g.rotation.y += dr * Math.min(1, dt * 8);
+  }
+  animateMonster(m, dt, d > 0.05);
+  if (dist < 1.3 * s + 0.2 && m.state === 'chase') caught();
+}
+
+function update(dt) {
+  time += dt;
+  if (!L) return;
+  L.time += dt;
+  if (canPlay()) updatePlayer(dt);
+
+  if (charge > 0) {
+    charge -= dt;
+    $('chargeBar').style.width = Math.max(0, charge / CHARGE_T * 100) + '%';
+    if (charge <= 0) { charge = 0; toast('The power faded. Grab more from the generator.'); updateStatus(); }
+  }
+
+  if (canPlay()) {
+    for (const it of L.pickups) {
+      if (it.taken) continue;
+      it.mesh.rotation.y += dt * 2;
+      it.mesh.position.y = 1.1 + Math.sin(time * 2.5) * 0.08;
+      if (Math.hypot(it.mesh.position.x - player.pos.x, it.mesh.position.z - player.pos.z) < 1.2) collect(it);
+    }
+    if (L.idx === 1 && L.flags.hasKey && !L.flags.chase && L.doors.get(keyOf(3, 6))?.open && player.pos.z > 9 * CELL) {
+      L.flags.chase = true;
+      L.cp = { chase: true };
+      setGoal('RUN! Reach the lever at the end!');
+      spawnMonster(cellX(3), cellX(6), 6.1, 0.9);
+    }
+    const [pc, pr] = cellOf(player.pos);
+    if (L.exitCell && pc === L.exitCell[0] && pr === L.exitCell[1]) {
+      const ok = L.idx === 1 ? L.flags.crateDown : true;
+      if (ok) completeChapter();
+      else if (!L.flags.exitHint) { L.flags.exitHint = true; toast('Pull the lever first!'); }
+    }
+  }
+
+  for (const lv of L.levers) if (lv.pulled && lv.pivot.rotation.x < 2.5) lv.pivot.rotation.x = Math.min(2.5, lv.pivot.rotation.x + dt * 9);
+  for (const d of L.doors.values()) if (d.open && d.lift < 1) {
+    d.lift = Math.min(1, d.lift + dt * 0.8);
+    d.mesh.position.y = WALL_H / 2 + d.lift * WALL_H * 0.92;
+  }
+
+  if (L.flags.trap && !L.crate && L.crateCell) {
+    const m = L.monster, cx = cellX(L.crateCell[0]), cz = cellX(L.crateCell[1]);
+    if (!m || m.state === 'idle' || Math.hypot(m.g.position.x - cx, m.g.position.z - cz) < 1.7) dropCrate();
+  }
+  if (L.crate && !L.crate.landed) {
+    const c = L.crate;
+    c.v += 40 * dt;
+    c.mesh.position.y -= c.v * dt;
+    if (c.mesh.position.y <= 1.4) {
+      c.mesh.position.y = 1.4; c.landed = true;
+      L.blocked.add(keyOf(...L.crateCell));
+      L.flags.crateDown = true;
+      const [pc, pr] = cellOf(player.pos);
+      if (pc === L.crateCell[0] && pr === L.crateCell[1]) player.pos.x = cellX(pc + 1);
+      shake = 0.5; sfx('crash');
+      const m = L.monster;
+      if (m && Math.hypot(m.g.position.x - c.mesh.position.x, m.g.position.z - c.mesh.position.z) < 4.2) {
+        m.state = 'dead'; toast('CRUNCH. That got it.');
+      } else if (m) { m.state = 'idle'; m.path = null; toast('That should hold it back.'); }
+    }
+  }
+
+  if (L.monster && L.monster.state !== 'idle') updateMonster(dt);
+  else if (L.monster) animateMonster(L.monster, dt, false);
+  if (L.statue) animateMonster(L.statue, dt * 0.2, false);
+
+  if (L.flickerT > 0) L.flickerT -= dt;
+  for (const lp of L.lamps) {
+    if (L.flickerT > 0) lp.f = Math.random() < 0.5 ? 0.05 : 1;
+    else if (lp.flicker) lp.f = Math.random() < 0.04 ? 0.1 : Math.min(1, lp.f + dt * 6);
+    else lp.f = 1;
+    lp.light.intensity = lp.base * lp.f;
+  }
+
+  const chasing = L.monster && L.monster.state === 'chase' && L.monster.wait <= 0;
+  setChase(chasing && scare <= 0);
+
+  // camera
+  const bob = Math.sin(player.bob) * 0.05;
+  camera.position.set(player.pos.x, EYE + bob, player.pos.z);
+  camera.rotation.set(player.pitch, player.yaw, 0);
+  if (shake > 0) {
+    shake -= dt;
+    camera.position.x += (Math.random() - 0.5) * shake * 0.3;
+    camera.position.y += (Math.random() - 0.5) * shake * 0.3;
+  }
+  if (scare > 0) {
+    scare -= dt;
+    camera.position.x += (Math.random() - 0.5) * 0.06;
+    camera.position.y += (Math.random() - 0.5) * 0.06;
+    $('flash').style.opacity = 0.5 + Math.random() * 0.5;
+    if (scare <= 0) afterScare();
+  }
+  camera.updateMatrixWorld();
+  updateHands(dt);
+
+  if (canPlay() && (aimT -= dt) <= 0) {
+    aimT = 0.15;
+    const a = aimed(), it = a && a.it;
+    $('cross').classList.toggle('hot', !!it && !(it.type === 'door' && (it.open || L.idx !== 1)));
+    lightTarget = 30 * Math.min(1, Math.max(0.12, Math.pow((a ? a.dist : 20) / 4, 1.3)));
+  }
+  flashlight.intensity += (lightTarget - flashlight.intensity) * Math.min(1, dt * 8);
+}
+let shake = 0, aimT = 0, lightTarget = 30;
+
+// ---------- sound ----------
+let actx = null, muted = store.get('tf-muted') === '1', master = null, noise = null, drone = null;
+function audio() {
+  if (!actx) {
+    try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch { return null; }
+    master = actx.createGain(); master.gain.value = muted ? 0 : 1; master.connect(actx.destination);
+    noise = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
+    const d = noise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    startDrone();
+  }
+  if (actx.state !== 'running' && running) actx.resume().catch(() => {});
+  return actx;
+}
+function unlockAudio() {
+  const ctx = audio();
+  if (!ctx) return;
+  const src = ctx.createBufferSource(); src.buffer = ctx.createBuffer(1, 1, 22050); src.connect(ctx.destination); src.start(0);
+  if (ctx.state === 'running') for (const ev of ['touchend', 'click', 'keydown']) removeEventListener(ev, unlockAudio, true);
+}
+for (const ev of ['touchend', 'click', 'keydown']) addEventListener(ev, unlockAudio, true);
+
+function startDrone() {
+  const g = actx.createGain(); g.gain.value = 0.035;
+  const lp = actx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 220;
+  for (const f of [49, 49.6, 73.4]) { const o = actx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.connect(lp); o.start(); }
+  lp.connect(g).connect(master);
+  drone = g;
+}
+let chaseOn = false, chaseTimer = 0;
+function setChase(on) {
+  if (on === chaseOn) return;
+  chaseOn = on;
+  clearInterval(chaseTimer);
+  if (on) chaseTimer = setInterval(() => { if (running) { sfx('beat'); } }, 400);
+}
+function tone(f1, f2, dur, type, vol, delay = 0, dest = master) {
+  const t0 = actx.currentTime + delay, o = actx.createOscillator(), g = actx.createGain();
+  o.type = type; o.frequency.setValueAtTime(f1, t0); o.frequency.exponentialRampToValueAtTime(Math.max(f2, 1), t0 + dur);
+  g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g).connect(dest); o.start(t0); o.stop(t0 + dur + 0.05);
+}
+function burst(freq, q, dur, vol, type = 'bandpass', delay = 0) {
+  const t0 = actx.currentTime + delay, s = actx.createBufferSource(), f = actx.createBiquadFilter(), g = actx.createGain();
+  s.buffer = noise; f.type = type; f.frequency.value = freq; f.Q.value = q;
+  g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  s.connect(f).connect(g).connect(master); s.start(t0); s.stop(t0 + dur + 0.05);
+}
+function sfx(kind, v = 1) {
+  if (!audio() || actx.state !== 'running') return;
+  switch (kind) {
+    case 'zip': tone(180, 900, 0.14, 'square', 0.05); burst(3000, 1, 0.12, 0.05); break;
+    case 'clank': burst(1800, 4, 0.08, 0.12); tone(300, 200, 0.08, 'triangle', 0.06); break;
+    case 'clunk': burst(500, 2, 0.25, 0.3, 'lowpass'); tone(110, 60, 0.3, 'sine', 0.3); break;
+    case 'power': tone(60, 180, 0.6, 'sawtooth', 0.12); burst(2500, 3, 0.5, 0.08); break;
+    case 'poweron': [330, 440, 660].forEach((f, i) => tone(f, f, 0.2, 'square', 0.05, i * 0.09)); break;
+    case 'deny': tone(160, 150, 0.12, 'square', 0.06); tone(120, 110, 0.15, 'square', 0.06, 0.13); break;
+    case 'pickup': tone(660, 1320, 0.18, 'sine', 0.12); break;
+    case 'door': burst(300, 1, 1.4, 0.25, 'lowpass'); tone(70, 50, 1.2, 'sawtooth', 0.06); break;
+    case 'step': burst(160 + Math.random() * 60, 1.5, 0.07, 0.12 * v, 'lowpass'); break;
+    case 'roar': tone(90, 40, 1.4, 'sawtooth', 0.35); burst(400, 1, 1.2, 0.35, 'lowpass'); tone(140, 70, 1.1, 'square', 0.08); break;
+    case 'scream': burst(1400, 0.8, 1.3, 0.6); tone(900, 250, 1.2, 'sawtooth', 0.3); tone(620, 180, 1.2, 'square', 0.18); break;
+    case 'sting': tone(466, 440, 1.2, 'sawtooth', 0.08); tone(493, 470, 1.2, 'sawtooth', 0.08); break;
+    case 'crash': burst(200, 0.7, 1, 0.6, 'lowpass'); tone(80, 30, 0.6, 'sine', 0.5); break;
+    case 'beat': tone(130, 40, 0.18, 'sine', 0.45); burst(90, 1, 0.1, 0.2, 'lowpass'); break;
+    case 'win': [262, 330, 392, 523].forEach((f, i) => tone(f, f, 0.4, 'triangle', 0.1, i * 0.15)); break;
+  }
+}
+
+// ---------- loop / pause ----------
+function frame(now) {
+  raf = requestAnimationFrame(frame);
+  const dt = Math.min((now - last) / 1000, 1 / 30);
+  last = now;
+  update(dt);
+  camera.layers.set(0);
+  renderer.render(scene, camera);
+  renderer.autoClear = false;
+  renderer.clearDepth();
+  camera.layers.set(1);
+  scene.background = null;
+  renderer.render(scene, camera);
+  scene.background = BG;
+  renderer.autoClear = true;
+  camera.layers.set(0);
+}
+let hostPaused = false, touchRun = false;
+function releaseInput() {
+  for (const k in keys) keys[k] = false;
+  resetJoy(); touchRun = false; look = null;
+  for (const b of document.querySelectorAll('#tbtns button')) b.classList.remove('down');
+}
+function syncRunning() {
+  const want = !document.hidden && !hostPaused;
+  if (want && !running) {
+    running = true; last = performance.now(); raf = requestAnimationFrame(frame);
+    if (actx) actx.resume().catch(() => {});
+  } else if (!want && running) {
+    running = false; cancelAnimationFrame(raf); releaseInput();
+    if (actx) actx.suspend().catch(() => {});
+    if (document.pointerLockElement) document.exitPointerLock();
+  }
+}
+addEventListener('blur', releaseInput);
+document.addEventListener('visibilitychange', syncRunning);
+addEventListener('pagehide', releaseInput);
+addEventListener('message', e => {
+  const cmd = e.data && e.data.obby;
+  if (cmd === 'pause') { hostPaused = true; syncRunning(); }
+  else if (cmd === 'resume') { hostPaused = false; syncRunning(); }
+});
+function resize() {
+  renderer.setSize(innerWidth, innerHeight, false);
+  camera.aspect = innerWidth / innerHeight;
+  camera.fov = camera.aspect < 0.8 ? 80 : 72;
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+
+// ---------- input ----------
+const KEYMAP = { KeyW: 'fwd', ArrowUp: 'fwd', KeyS: 'back', ArrowDown: 'back', KeyA: 'left', ArrowLeft: 'left', KeyD: 'right', ArrowRight: 'right', ShiftLeft: 'run', ShiftRight: 'run' };
+addEventListener('keydown', e => {
+  const k = KEYMAP[e.code];
+  if (k) { keys[k] = true; hideHint(); e.preventDefault(); }
+  else if (e.code === 'KeyQ') fire('blue');
+  else if (e.code === 'KeyE') fire('red');
+  else if (e.code === 'Space') e.preventDefault();
+});
+addEventListener('keyup', e => { const k = KEYMAP[e.code]; if (k) keys[k] = false; });
+
+const turn = (dx, dy, s) => {
+  player.yaw -= dx * s;
+  player.pitch = Math.max(-1.3, Math.min(1.3, player.pitch - dy * s));
+};
+let look = null;
+canvas.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'touch') {
+    document.body.classList.add('touch');
+    look = { id: e.pointerId, x: e.clientX, y: e.clientY };
+    try { canvas.setPointerCapture(e.pointerId); } catch {}
+    return;
+  }
+  if (document.pointerLockElement === canvas) {
+    if (e.button === 0) fire('blue');
+    else if (e.button === 2) fire('red');
+    return;
+  }
+  if (!cardOpen && canvas.requestPointerLock) {
+    try { const p = canvas.requestPointerLock(); if (p && p.catch) p.catch(() => {}); } catch {}
+  }
+  look = { id: e.pointerId, x: e.clientX, y: e.clientY };
+  hideHint();
+});
+canvas.addEventListener('pointermove', e => {
+  if (document.pointerLockElement === canvas) { if (canPlay()) turn(e.movementX, e.movementY, 0.0024); return; }
+  if (!look || look.id !== e.pointerId) return;
+  if (canPlay()) turn(e.clientX - look.x, e.clientY - look.y, e.pointerType === 'touch' ? 0.006 : 0.004);
+  look.x = e.clientX; look.y = e.clientY;
+});
+const endLook = e => { if (look && look.id === e.pointerId) look = null; };
+canvas.addEventListener('pointerup', endLook);
+canvas.addEventListener('pointercancel', endLook);
+
+for (const ev of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(ev, e => e.preventDefault());
+document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+document.addEventListener('contextmenu', e => e.preventDefault());
+let lastTouchEnd = 0;
+document.addEventListener('touchend', e => {
+  const now = Date.now();
+  if (now - lastTouchEnd < 350 && e.target.tagName !== 'BUTTON') e.preventDefault();
+  lastTouchEnd = now;
+}, { passive: false });
+
+if (isTouch) { document.body.classList.add('touch'); hint.textContent = 'Left stick to move · drag to look · BLUE / RED fire your hands'; }
+const joyEl = $('joy'), knob = $('knob');
+let joyId = null;
+function resetJoy() { joyId = null; joy.x = joy.y = 0; knob.style.transform = ''; }
+function moveJoy(e) {
+  const r = joyEl.getBoundingClientRect(), R = 45;
+  let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+  const l = Math.hypot(dx, dy);
+  if (l > R) { dx *= R / l; dy *= R / l; }
+  knob.style.transform = `translate(${dx}px, ${dy}px)`;
+  joy.x = dx / R; joy.y = -dy / R;
+}
+joyEl.addEventListener('pointerdown', e => { joyId = e.pointerId; try { joyEl.setPointerCapture(e.pointerId); } catch {} moveJoy(e); hideHint(); e.preventDefault(); });
+joyEl.addEventListener('pointermove', e => { if (e.pointerId === joyId) moveJoy(e); });
+joyEl.addEventListener('pointerup', e => { if (e.pointerId === joyId) resetJoy(); });
+joyEl.addEventListener('pointercancel', e => { if (e.pointerId === joyId) resetJoy(); });
+
+function holdBtn(id, down, up) {
+  const b = $(id);
+  b.addEventListener('pointerdown', e => { b.classList.add('down'); down(); e.preventDefault(); e.stopPropagation(); });
+  for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) b.addEventListener(ev, () => { b.classList.remove('down'); if (up) up(); });
+}
+holdBtn('bBlue', () => fire('blue'));
+holdBtn('bRed', () => fire('red'));
+holdBtn('bRun', () => { touchRun = true; }, () => { touchRun = false; });
+
+const soundBtn = $('soundBtn');
+const syncSound = () => { soundBtn.textContent = muted ? 'Sound off' : 'Sound on'; if (master) master.gain.value = muted ? 0 : 1; };
+syncSound();
+soundBtn.addEventListener('click', e => { muted = !muted; store.set('tf-muted', muted ? '1' : '0'); syncSound(); e.currentTarget.blur(); });
+$('chBtn').addEventListener('click', e => { e.currentTarget.blur(); showChapters(); });
+
+// ---------- start right away ----------
+const saved = Math.min(Number(store.get('tf-chapter')) || 0, unlocked - 1, CHAPTERS.length - 1);
+buildLevel(saved);
+resize();
+camera.position.set(player.pos.x, EYE, player.pos.z);
+syncRunning();
+$('loading').classList.add('done');
+setTimeout(() => $('loading').remove(), 500);
+</script>
+</body>
+</html>
