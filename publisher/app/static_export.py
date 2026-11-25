@@ -141,11 +141,6 @@ def export_static_site(export_dir: Path | None = None) -> dict:
     articles_root = news_out / "article"
     articles_root.mkdir(parents=True, exist_ok=True)
 
-    live_slugs = {dict(row)["slug"] for row in stories}
-    for child in articles_root.iterdir():
-        if child.is_dir() and child.name not in live_slugs:
-            shutil.rmtree(child, ignore_errors=True)
-
     for row in stories:
         story = dict(row)
         story["article_body"] = _rewrite_body(story.get("article_body") or "")
@@ -232,12 +227,9 @@ def export_static_site(export_dir: Path | None = None) -> dict:
     media_src = project_root() / "data" / "media"
     media_dest = news_out / "media"
     media_dest.mkdir(parents=True, exist_ok=True)
-    for child in media_dest.iterdir():
-        if child.is_dir() and child.name not in live_slugs:
-            shutil.rmtree(child, ignore_errors=True)
     if media_src.exists():
         for slug_dir in media_src.iterdir():
-            if not slug_dir.is_dir() or slug_dir.name not in live_slugs:
+            if not slug_dir.is_dir():
                 continue
             target = media_dest / slug_dir.name
             if target.exists():
