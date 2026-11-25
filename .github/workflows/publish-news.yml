@@ -2,8 +2,11 @@ name: Publish TMZ news
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    # GitHub's minimum schedule interval is 5 minutes; polls live RSS and pushes only when there are changes.
+    - cron: "*/5 * * * *"
   workflow_dispatch:
+  repository_dispatch:
+    types: [publish-news]
 
 permissions:
   contents: write
@@ -46,7 +49,7 @@ jobs:
           EXPORT_DIR: ${{ github.workspace }}
           GIT_REMOTE: origin
           GIT_BRANCH: main
-          PUSH_INTERVAL_HOURS: "0.5"
+          SYNC_INTERVAL_SECONDS: "300"
           ENRICH_BATCH_SIZE: "12"
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |

@@ -64,11 +64,16 @@ def run_once(*, deploy: str) -> None:
     log.info("Syncing TMZ feed...")
     sync_result = sync_tmz()
     log.info(
-        "Sync done: fetched=%s enriched=%s total_published=%s",
+        "Sync done: fetched=%s new=%s enriched=%s total_published=%s",
         sync_result.get("fetched"),
+        sync_result.get("new_stories"),
         sync_result.get("enriched_this_run"),
         sync_result.get("published"),
     )
+
+    if not sync_result.get("new_stories") and not sync_result.get("enriched_this_run"):
+        log.info("RSS unchanged — nothing new to publish; skipping export/deploy")
+        return
 
     log.info("Exporting static SEO site...")
     export_result = export_static_site()
