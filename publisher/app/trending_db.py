@@ -137,6 +137,18 @@ def count_by_normalized(conn: sqlite3.Connection, keyword_normalized: str) -> in
     return int(row["n"]) if row else 0
 
 
+def latest_by_normalized(conn: sqlite3.Connection, keyword_normalized: str):
+    return conn.execute(
+        """
+        SELECT * FROM trending_topics
+        WHERE keyword_normalized = ?
+        ORDER BY published_at DESC, id DESC
+        LIMIT 1
+        """,
+        (keyword_normalized,),
+    ).fetchone()
+
+
 def insert_topic(conn: sqlite3.Connection, row: dict) -> int:
     cols = ", ".join(row.keys())
     placeholders = ", ".join("?" * len(row))

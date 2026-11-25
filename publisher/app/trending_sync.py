@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import logging
+import re
 import sqlite3
 from pathlib import Path
 
@@ -12,6 +14,7 @@ from app.trending_db import (
     count_by_normalized,
     init_db,
     insert_topic,
+    latest_by_normalized,
     normalize_keyword,
     unique_trending_slug,
     utc_now,
@@ -20,6 +23,38 @@ from app.trending_enrich import build_article
 from app.trending_rss import TrendItem, fetch_us_trending
 
 logger = logging.getLogger(__name__)
+
+
+def _norm_title(title: str) -> str:
+    return re.sub(r"\s+", " ", (title or "").strip().lower())
+
+
+def news_fingerprint_from_item(item: TrendItem) -> str:
+    titles = sorted(
+        _norm_title(n.title) for n in (item.news or [])[:8] if _norm_title(n.title)
+    )
+    return "|".join(titles)
+
+
+def news_fingerprint_from_stored(source_links: str | None) -> str:
+    try:
+        items = json.loads(source_links or "[]")
+        titles = sorted(
+            _norm_title(x.get("title", "")) for x in items if _norm_title(x.get("title", ""))
+        )
+        return "|".join(titles)
+    except (json.JSONDecodeError, TypeError):
+        return ""
+
+
+def news_sources_changed(latest_row, item: TrendItem) -> bool:
+    if latest_row is None:
+        return True
+    prev = news_fingerprint_from_stored(latest_row["source_links"])
+    curr = news_fingerprint_from_item(item)
+    if not curr:
+        return False
+    return prev != curr
 
 
 def _media_root() -> Path:
@@ -46,12 +81,14 @@ def _cache_image(slug: str, url: str) -> str | None:
 
 
 def _sort_for_publishing(conn: sqlite3.Connection, items: list[TrendItem]) -> list[TrendItem]:
-    """Prefer keywords with fewer articles so editions 2-3 get published."""
+    """Prefer keywords eligible for a new edition (under cap, news changed)."""
 
     def key(item: TrendItem) -> tuple:
         norm = normalize_keyword(item.keyword)
         n = count_by_normalized(conn, norm)
-        return (n, -item.traffic_score)
+        latest = latest_by_normalized(conn, norm)
+        changed = 1 if news_sources_changed(latest, item) else 0
+        return (-changed, n, -item.traffic_score)
 
     eligible = [i for i in items if i.traffic_score >= SETTINGS.trending_min_traffic_score]
     return sorted(eligible, key=key)
@@ -66,6 +103,7 @@ def sync_trending() -> dict:
     max_per_kw = SETTINGS.trending_max_per_keyword
     created = 0
     skipped_at_cap = 0
+    skipped_unchanged = 0
     new_slugs: list[str] = []
 
     skipped_low = len(items) - len(
@@ -79,6 +117,11 @@ def sync_trending() -> dict:
         existing = count_by_normalized(conn, norm)
         if existing >= max_per_kw:
             skipped_at_cap += 1
+            continue
+
+        latest = latest_by_normalized(conn, norm)
+        if existing > 0 and not news_sources_changed(latest, item):
+            skipped_unchanged += 1
             continue
 
         slug = unique_trending_slug(conn, item.keyword)
@@ -112,7 +155,7 @@ def sync_trending() -> dict:
         new_slugs.append(slug)
         edition = existing + 1
         logger.info(
-            "Trending article created: %s (%s) edition %s/%s",
+            "Trending article created: %s (%s) edition %s/%s (news updated)",
             item.keyword,
             slug,
             edition,
@@ -124,6 +167,7 @@ def sync_trending() -> dict:
         "fetched": len(items),
         "new_articles": created,
         "skipped_at_keyword_cap": skipped_at_cap,
+        "skipped_unchanged_news": skipped_unchanged,
         "skipped_low_traffic": skipped_low,
         "new_slugs": new_slugs,
         "max_per_keyword": max_per_kw,
