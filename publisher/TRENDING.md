@@ -1,0 +1,36 @@
+# Trending searches automation
+
+## Live URLs
+- Hub: `https://detailz.xyz/trending/`
+- Topics: `https://detailz.xyz/trending/{keyword-slug}/`
+- Date archive (redirects to canonical): `trending/archive/YYYY/MM/DD/{slug}/`
+- Sitemap: `https://detailz.xyz/trending/sitemap.xml`
+
+## GitHub Action
+- Workflow: `.github/workflows/publish-trending.yml`
+- Schedule: every 10 minutes + manual `workflow_dispatch`
+- Requires secret: `OPENAI_API_KEY` (optional; without it, template copy is used)
+
+## Env (Actions or local)
+```
+TRENDING_MAX_PER_RUN=5
+TRENDING_MIN_TRAFFIC_SCORE=200
+TRENDING_GEO=US
+```
+
+## Local run
+```
+cd publisher
+set REPO_ROOT=.. 
+set EXPORT_DIR=..
+python tools/trending_publisher.py --deploy none
+```
+
+## Indexing (built-in)
+- `robots`: index, follow, large previews, unlimited snippets
+- JSON-LD: Article, FAQPage, BreadcrumbList, Speakable; hub uses ItemList + WebSite
+- hreflang `en-us` + canonical on every URL
+- After push: Google/Bing **sitemap ping** + optional **IndexNow** for new URLs
+- Set repo secret `INDEXNOW_KEY` (random GUID); file `{key}.txt` is published at site root
+
+Submit `https://detailz.xyz/trending/sitemap.xml` once in Google Search Console.

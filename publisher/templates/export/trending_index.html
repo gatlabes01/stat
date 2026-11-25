@@ -1,0 +1,76 @@
+{% from "export/_adsense.html" import adsense_head, adsense_unit %}
+{% from "export/_trending_seo.html" import trending_hub_seo %}
+{% set title = 'Trending Now — Hottest Google Searches | Detailz' %}
+{% set description = 'Live Google Trends explainer articles: SEO-rich guides for the hottest U.S. search keywords people are looking up right now on Detailz.' %}
+{% set canonical = abs_url('/') %}
+{% set seo = trending_hub_seo(title, description, canonical, item_list, site_name, site_url) %}
+<!DOCTYPE html>
+<html lang="en-US" class="no-js no-svg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="user-scalable=yes, width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1">
+<title>{{ title }}</title>
+<meta name="description" content="{{ description }}">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<link rel="canonical" href="{{ canonical }}">
+<link rel="alternate" type="application/rss+xml" title="{{ site_name }} Trending" href="{{ abs_url('/feed.xml') }}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans%3A400%7CRoboto+Slab%3A400%2C300&amp;display=swap">
+<link rel="stylesheet" href="/wp-content/themes/voice/assets/css/min.css?ver=2.9.9">
+<link rel="stylesheet" href="{{ url_for('/static/news.css') }}">
+{{ seo }}
+{{ adsense_head() }}
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FYM5BSJPNZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-FYM5BSJPNZ');
+</script>
+</head>
+<body class="wp-embed-responsive wp-theme-voice vce-sid-right voice-v_2_9_9 archive category-trending">
+<div id="vce-main">
+<header id="header" class="main-header">
+<div class="container header-main-area header-3-wrapper">
+  <div class="site-branding">
+    <span class="site-title"><a href="/" rel="home" class="has-logo">
+      <img src="/wp-content/uploads/2022/06/newlogo-1.png" alt="Detailz" class="vce-logo">
+    </a></span>
+  </div>
+  <nav id="site-navigation" class="main-navigation" role="navigation">
+    <ul class="nav-menu">
+      <li><a href="/">Home</a></li>
+      <li><a href="/news/">News</a></li>
+      <li class="current-menu-item"><a href="{{ url_for('/') }}" aria-current="page">Trending</a></li>
+    </ul>
+  </nav>
+</div>
+</header>
+<div id="main-wrapper">
+{{ adsense_unit('vce-ad-below-header vce-ad-container') }}
+<div id="content" class="container site-content vce-sid-right">
+  <div id="primary" class="vce-main-content">
+    <main id="main" class="main-box">
+      <header class="entry-header"><h1 class="entry-title">Latest trending searches</h1></header>
+      {{ adsense_unit() }}
+      <p class="entry-headline">Hot keywords from <strong>Google Trends (U.S.)</strong> — {{ total }} explainer{{ 's' if total != 1 else '' }}. Each URL includes the search phrase for SEO.</p>
+      <div class="vce-loop-wrap">
+      {% for t in topics %}
+        <article class="vce-lay-b post">
+          <h2 class="entry-title"><a href="{{ url_for('/' ~ t.slug ~ '/') }}">{{ t.seo_title or t.keyword }}</a></h2>
+          <p>{{ t.meta_description_short or t.meta_description }}</p>
+          <p class="entry-meta">{{ t.approx_traffic or 'Trending' }} · {{ t.published_label }}</p>
+        </article>
+        {% if loop.index is divisibleby 4 %}{{ adsense_unit() }}{% endif %}
+      {% endfor %}
+      </div>
+      {{ adsense_unit() }}
+    </main>
+  </div>
+</div>
+{{ adsense_unit('vce-ad-above-footer vce-ad-container') }}
+<footer id="footer" class="site-footer">
+  <div class="container"><div class="site-info">{{ copyright_notice }}</div></div>
+</footer>
+</div>
+</body>
+</html>

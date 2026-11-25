@@ -10,6 +10,12 @@ class Settings:
     site_url: str
     site_base_path: str
     news_base_path: str
+    trending_base_path: str
+    trending_rss_url: str
+    trending_geo: str
+    trending_max_per_run: int
+    trending_min_traffic_score: int
+    indexnow_key: str | None
     site_tagline: str
     tmz_rss_url: str
     sync_interval_seconds: int
@@ -34,6 +40,15 @@ def load_settings() -> Settings:
         site_url=os.environ.get("SITE_URL", "http://localhost:8000").rstrip("/"),
         site_base_path=os.environ.get("SITE_BASE_PATH", "").rstrip("/"),
         news_base_path=os.environ.get("NEWS_BASE_PATH", "/news").rstrip("/"),
+        trending_base_path=os.environ.get("TRENDING_BASE_PATH", "/trending").rstrip("/"),
+        trending_rss_url=os.environ.get(
+            "TRENDING_RSS_URL",
+            "https://trends.google.com/trending/rss?geo=US",
+        ),
+        trending_geo=os.environ.get("TRENDING_GEO", "US"),
+        trending_max_per_run=int(os.environ.get("TRENDING_MAX_PER_RUN", "5")),
+        trending_min_traffic_score=int(os.environ.get("TRENDING_MIN_TRAFFIC_SCORE", "200")),
+        indexnow_key=os.environ.get("INDEXNOW_KEY") or None,
         site_tagline=os.environ.get(
             "SITE_TAGLINE",
             "Celebrity news and entertainment, rewritten for readers who want the full picture.",

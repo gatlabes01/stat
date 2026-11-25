@@ -1,0 +1,92 @@
+{% from "export/_adsense.html" import adsense_head, adsense_unit %}
+{% from "export/_trending_seo.html" import trending_article_seo %}
+{% set title = topic['seo_title'] or topic['keyword'] %}
+{% set h1 = topic['h1'] or topic['keyword'] %}
+{% set description = topic['meta_description_short'] or topic['meta_description'] or title %}
+{% set seo = trending_article_seo(title, h1, description, canonical, topic['image_url_abs'] or '', topic['published_iso'], topic['modified_iso'], topic['keyword'], topic['slug'], topic['faq_schema'], site_name, site_url, trending_hub_url) %}
+<!DOCTYPE html>
+<html lang="en-US" class="no-js no-svg" itemscope itemtype="https://schema.org/Article">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="user-scalable=yes, width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1">
+<title>{{ title }}</title>
+<meta name="description" content="{{ description }}">
+<meta name="keywords" content="{{ topic['seo_keywords'] or topic['keyword'] }}">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="googlebot" content="index, follow">
+<link rel="canonical" href="{{ canonical }}">
+<link rel="alternate" type="application/rss+xml" title="{{ site_name }} Trending" href="{{ abs_url('/feed.xml') }}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans%3A400%7CRoboto+Slab%3A400%2C300&amp;display=swap">
+<link rel="stylesheet" href="/wp-content/themes/voice/assets/css/min.css?ver=2.9.9">
+<link rel="stylesheet" href="{{ url_for('/static/news.css') }}">
+{{ seo }}
+{{ adsense_head() }}
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FYM5BSJPNZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-FYM5BSJPNZ');
+</script>
+</head>
+<body class="wp-embed-responsive wp-theme-voice vce-sid-right voice-v_2_9_9 wp-singular single single-post vce-single trending-article">
+<div id="vce-main">
+<header id="header" class="main-header">
+<div class="container header-main-area header-3-wrapper">
+  <div class="site-branding">
+    <span class="site-title"><a href="/" rel="home" class="has-logo">
+      <img src="/wp-content/uploads/2022/06/newlogo-1.png" alt="Detailz" class="vce-logo">
+    </a></span>
+  </div>
+  <nav id="site-navigation" class="main-navigation" role="navigation">
+    <ul class="nav-menu">
+      <li><a href="/">Home</a></li>
+      <li><a href="/news/">News</a></li>
+      <li class="current-menu-item"><a href="{{ url_for('/') }}" aria-current="page">Trending</a></li>
+    </ul>
+  </nav>
+</div>
+</header>
+<div id="main-wrapper">
+{{ adsense_unit('vce-ad-below-header vce-ad-container') }}
+<div id="mks-breadcrumbs" class="container mks-bredcrumbs-container">
+  <p id="breadcrumbs"><span><span><a href="/">Home</a></span> » <span><a href="{{ url_for('/') }}">Trending</a></span> » <span class="breadcrumb_last">{{ h1 }}</span></span></p>
+</div>
+<div id="content" class="container site-content vce-sid-right">
+  <div id="primary" class="vce-main-content">
+    <main id="main" class="main-box main-box-single">
+      <article class="vce-single post type-post status-publish hentry category-trending" itemprop="articleBody">
+        <header class="entry-header">
+          <h1 class="entry-title" itemprop="headline">{{ h1 }}</h1>
+          <p class="entry-meta"><time datetime="{{ topic['published_iso'] }}" itemprop="datePublished">{{ topic['published_label'] }}</time> · Google Trends · {{ topic['approx_traffic'] or 'Rising' }} U.S. searches</p>
+        </header>
+        {{ adsense_unit() }}
+        <div class="entry-headline"><p itemprop="description">{{ description }}</p></div>
+        {{ adsense_unit() }}
+        <div class="entry-content">
+          {{ topic['article_body']|safe }}
+          {% if related_topics %}
+          <section class="trending-related" aria-label="More trending topics">
+            <h2>More trending searches</h2>
+            <ul>
+            {% for r in related_topics %}
+              <li><a href="{{ r.url }}">{{ r.title }}</a></li>
+            {% endfor %}
+            </ul>
+          </section>
+          {% endif %}
+        </div>
+        {{ adsense_unit() }}
+      </article>
+    </main>
+  </div>
+</div>
+{{ adsense_unit('vce-ad-above-footer vce-ad-container') }}
+<footer id="footer" class="site-footer">
+  <div class="container">
+    <div class="site-info">{{ copyright_notice }}</div>
+  </div>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+<channel>
+<title>{{ site_name }} — Trending Searches</title>
+<link>{{ abs_url('/') }}</link>
+<description>Hottest U.S. Google Trends keywords on Detailz</description>
+{% for t in topics %}
+<item>
+  <title>{{ t.seo_title or t.keyword }}</title>
+  <link>{{ abs_url('/' ~ t.slug ~ '/') }}</link>
+  <guid isPermaLink="true">{{ abs_url('/' ~ t.slug ~ '/') }}</guid>
+  <pubDate>{{ t.published_iso }}</pubDate>
+  <description>{{ t.meta_description }}</description>
+</item>
+{% endfor %}
+</channel>
+</rss>
