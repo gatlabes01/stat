@@ -11,6 +11,7 @@ import httpx
 from app.config import SETTINGS
 from app.trending_rss import TrendItem, TrendNewsItem
 from app.trending_titles import apply_polished_titles, smart_display
+from app.voice import voice_prompt_section
 
 logger = logging.getLogger(__name__)
 
@@ -18,10 +19,15 @@ TARGET_WORDS = 300
 TARGET_MIN = 260
 TARGET_MAX = 340
 
-TRENDING_SYSTEM = f"""You write ~{TARGET_WORDS}-word news copy for Detailz about the given topic.
+def trending_system_prompt() -> str:
+    return f"""You write ~{TARGET_WORDS}-word news copy for Detailz about the given topic.
+
+{voice_prompt_section()}
+
 Rules:
-- Sound like a wire editor or sports desk: short leads, active voice, no filler or self-help tone.
+- Detailz voice: skeptical-but-fair, plain English, short leads — not wire-service flat or self-help.
 - Use ONLY facts from the provided headlines — no invented quotes, scores, dates, or drama.
+- Weave 0–2 signature voice hooks where they fit naturally.
 - Never mention Google, search volume, trending, spiking, AI, briefings, explainers, or "what to watch next".
 - Banned phrases: plain-English, rundown, news cycle, catch up quickly, smart move, traction, puzzle pieces.
 - Use the display keyword exactly 2 or 3 times in paragraphs only (not FAQ).
@@ -234,7 +240,7 @@ def _call_llm(item: TrendItem) -> dict[str, Any]:
         "temperature": 0.5,
         "response_format": {"type": "json_object"},
         "messages": [
-            {"role": "system", "content": TRENDING_SYSTEM},
+            {"role": "system", "content": trending_system_prompt()},
             {"role": "user", "content": json.dumps(context, ensure_ascii=False)},
         ],
     }

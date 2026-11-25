@@ -13,15 +13,20 @@ from app.database import connect, get_story_by_id
 from app.images import cache_story_images
 from app.slug import unique_slug
 from app.tmz_parse import parse_tmz_article
+from app.voice import voice_prompt_section
 
 logger = logging.getLogger(__name__)
 
-SYSTEM_PROMPT = """You lightly edit TMZ article body text for publication on Detailz.
+SYSTEM_PROMPT = f"""You rewrite TMZ article body text for Detailz using the site's personal voice.
+
+{voice_prompt_section()}
+
 Rules:
 - Do NOT change the headline or description (they are set separately from TMZ).
-- Rewrite each body paragraph only slightly: same facts, same order, same length, similar tone.
-- Change a few words per sentence for originality; do not add hype, filler, or new facts.
-- Do not invent quotes or events.
+- Keep every fact, quote, name, date, and event; same paragraph count and order.
+- Rewrite for originality and Detailz voice — not a light word-swap.
+- Use 0–2 signature hooks from the voice bible where they fit naturally.
+- Do not invent quotes, events, or facts beyond the source.
 Return valid JSON only:
 - paragraphs: array of strings, one per input paragraph (same count)
 - image_alts: optional short alts, one per image
@@ -73,11 +78,11 @@ def _call_llm(paragraphs: list[str], image_count: int) -> dict[str, Any]:
     payload = {
         "paragraphs": paragraphs,
         "image_count": image_count,
-        "instruction": "Slight rewrite only; preserve meaning and length.",
+        "instruction": "Detailz voice rewrite; preserve all facts and paragraph count.",
     }
     body = {
         "model": SETTINGS.openai_model,
-        "temperature": 0.35,
+        "temperature": 0.45,
         "response_format": {"type": "json_object"},
         "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
@@ -257,19 +262,27 @@ def enrich_pending(limit: int | None = None) -> dict[str, int]:
     return {"enriched": ok, "failed": failed, "attempted": len(story_ids)}
 
 
-def mark_stories_for_reenrich() -> int:
+def mark_stories_for_reenrich(*, all_published: bool = False) -> int:
     conn = connect()
-    cur = conn.execute(
-        """
-        UPDATE stories SET status = 'pending'
-        WHERE status = 'published'
-          AND (
-            seo_title LIKE '%| Detailz'
-            OR article_body LIKE '%Here''s the latest:%'
-            OR seo_title != source_title
-          )
-        """
-    )
+    if all_published:
+        cur = conn.execute(
+            """
+            UPDATE stories SET status = 'pending'
+            WHERE status = 'published'
+            """
+        )
+    else:
+        cur = conn.execute(
+            """
+            UPDATE stories SET status = 'pending'
+            WHERE status = 'published'
+              AND (
+                seo_title LIKE '%| Detailz'
+                OR article_body LIKE '%Here''s the latest:%'
+                OR seo_title != source_title
+              )
+            """
+        )
     conn.commit()
     n = cur.rowcount
     conn.close()
