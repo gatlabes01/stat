@@ -50,6 +50,13 @@ def publish_trending_to_github(
     if commit.returncode != 0:
         raise RuntimeError(commit.stderr or commit.stdout)
 
+    pull = _run(
+        ["git", "pull", "--rebase", SETTINGS.git_remote, SETTINGS.git_branch],
+        root,
+    )
+    if pull.returncode != 0:
+        raise RuntimeError(pull.stderr or pull.stdout or "git pull --rebase failed")
+
     push = _run(["git", "push", SETTINGS.git_remote, SETTINGS.git_branch], root)
     if push.returncode != 0:
         raise RuntimeError(push.stderr or push.stdout)
