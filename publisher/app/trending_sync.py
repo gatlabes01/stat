@@ -42,8 +42,6 @@ from app.trending_db import (
 
 from app.trending_enrich import build_article
 
-from app.trending_relevance import align_trend_item
-
 from app.trending_rss import TrendItem, fetch_us_trending
 
 
@@ -274,37 +272,18 @@ def sync_trending() -> dict:
 
     skipped_unchanged = 0
 
-    skipped_off_topic = 0
-
     new_slugs: list[str] = []
 
     updated_slugs: list[str] = []
 
+    skipped_low = sum(
+        1 for i in items if i.traffic_score < SETTINGS.trending_min_traffic_score
+    )
 
-
-    eligible = []
-
-    skipped_low = 0
-
-    for raw in items:
-
-        if raw.traffic_score < SETTINGS.trending_min_traffic_score:
-
-            skipped_low += 1
-
-            continue
-
-        aligned = align_trend_item(raw)
-
-        if raw.news and not aligned.news:
-
-            skipped_off_topic += 1
-
-            continue
-
-        eligible.append(aligned)
-
-    by_traffic = sorted(eligible, key=lambda i: -i.traffic_score)
+    by_traffic = sorted(
+        [i for i in items if i.traffic_score >= SETTINGS.trending_min_traffic_score],
+        key=lambda i: -i.traffic_score,
+    )
 
 
 
@@ -387,8 +366,6 @@ def sync_trending() -> dict:
         "skipped_unchanged_news": skipped_unchanged,
 
         "skipped_low_traffic": skipped_low,
-
-        "skipped_off_topic": skipped_off_topic,
 
         "new_slugs": new_slugs,
 

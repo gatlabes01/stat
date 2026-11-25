@@ -10,7 +10,6 @@ import httpx
 
 from app.config import SETTINGS
 from app.trending_rss import TrendItem, TrendNewsItem
-from app.trending_relevance import align_trend_item, filter_source_links_json
 from app.trending_titles import apply_polished_titles, smart_display
 from app.voice import voice_prompt_section
 
@@ -27,9 +26,8 @@ def trending_system_prompt() -> str:
 
 Rules:
 - Detailz voice: skeptical-but-fair, plain English, short leads — not wire-service flat or self-help.
-- The FIRST paragraph must answer the search keyword using only matching headlines.
+- Use ALL provided Google Trends headlines for this keyword — no filtering.
 - Use ONLY facts from the provided headlines — no invented quotes, scores, dates, or drama.
-- If a headline is about a different story, ignore it.
 - Weave 0–2 signature voice hooks where they fit naturally.
 - Never mention Google, search volume, trending, spiking, AI, briefings, explainers, or "what to watch next".
 - Banned phrases: plain-English, rundown, news cycle, catch up quickly, smart move, traction, puzzle pieces.
@@ -115,7 +113,6 @@ def _strip_google_jargon(text: str) -> str:
 
 def _fallback_paragraphs(item: TrendItem) -> list[str]:
     name = _keyword_label(item.keyword)
-    item = align_trend_item(item)
     paras: list[str] = []
 
     if item.news:
@@ -222,7 +219,6 @@ def _call_llm(item: TrendItem) -> dict[str, Any]:
 
 
 def compose_article_html(item: TrendItem, image_url: str | None) -> tuple[str, list[dict], list[str]]:
-    item = align_trend_item(item)
     if SETTINGS.openai_api_key:
         try:
             data = _call_llm(item)
@@ -280,11 +276,7 @@ def topic_to_trend_item(topic: dict) -> TrendItem:
 
 
 def refresh_topic_body(topic: dict) -> dict:
-    """Rebuild body from keyword-matched sources only (runs on every export)."""
-    topic["source_links"] = filter_source_links_json(
-        topic.get("keyword") or "",
-        topic.get("source_links"),
-    )
+    """Rebuild body from stored Trends headlines (runs on every export)."""
     item = topic_to_trend_item(topic)
     img = topic.get("image_url")
     body_html, faq, kw_list = compose_article_html(item, img)

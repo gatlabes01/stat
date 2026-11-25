@@ -121,12 +121,6 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
     for row in rows:
         topic = dict(row)
         topic = refresh_topic_body(topic)
-        try:
-            sources = json.loads(topic.get("source_links") or "[]")
-        except json.JSONDecodeError:
-            sources = []
-        if not any(isinstance(s, dict) and s.get("title") for s in sources):
-            continue
         topic["article_body"] = _rewrite_body(topic.get("article_body") or "")
         slug = topic["slug"]
         dest = trend_out / slug
@@ -169,7 +163,7 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
 
         stories_for_index.append(topic)
 
-    live_slugs = {t["slug"] for t in stories_for_index}
+    live_slugs = {dict(r)["slug"] for r in rows}
     if archive_root.exists():
         stale = [
             index.parent

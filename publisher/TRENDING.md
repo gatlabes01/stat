@@ -8,13 +8,15 @@
 
 ## GitHub Action
 - Workflow: `.github/workflows/publish-trending.yml`
-- Schedule: every 5 minutes + manual `workflow_dispatch`
+- Schedule: **every 5 minutes** (`0,5,10…55` UTC) + `workflow_dispatch` + `repository_dispatch` (`publish-trending`)
+- GitHub may skip some scheduled ticks under load; green runs mean sync worked when fired.
 - Requires secret: `OPENAI_API_KEY` (optional; without it, template copy is used)
 
 ## Env (Actions or local)
 ```
-TRENDING_MAX_PER_RUN=5
-One URL per keyword. Headlines that do not mention the keyword are dropped (no off-topic pages). When matching headlines change, the same page updates in place. Up to MAX_PER_RUN new keywords per cycle.
+TRENDING_MAX_PER_RUN=15
+TRENDING_MIN_TRAFFIC_SCORE=0
+One URL per keyword. All Trends RSS headlines for each keyword are kept (no relevance filter). When headlines change, the same page updates in place. Up to MAX_PER_RUN new keywords per cycle.
 TRENDING_MIN_TRAFFIC_SCORE=200
 TRENDING_GEO=US
 ```

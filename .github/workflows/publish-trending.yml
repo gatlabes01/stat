@@ -6,11 +6,14 @@ on:
 
   schedule:
 
-  # Poll Trends RSS every 5 minutes (max 5 new articles/run via env).
-
-    - cron: "*/5 * * * *"
+    # GitHub minimum interval is 5 minutes (UTC). All 12 slots per hour.
+    - cron: "0,5,10,15,20,25,30,35,40,45,50,55 * * * *"
 
   workflow_dispatch:
+
+  repository_dispatch:
+
+    types: [publish-trending]
 
 
 
@@ -86,9 +89,9 @@ jobs:
 
           TRENDING_GEO: US
 
-          TRENDING_MAX_PER_RUN: "5"
+          TRENDING_MAX_PER_RUN: "15"
 
-          TRENDING_MIN_TRAFFIC_SCORE: "200"
+          TRENDING_MIN_TRAFFIC_SCORE: "0"
 
           REPO_ROOT: ${{ github.workspace }}
 

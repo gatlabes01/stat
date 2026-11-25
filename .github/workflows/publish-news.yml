@@ -2,8 +2,8 @@ name: Publish TMZ news
 
 on:
   schedule:
-    # Poll TMZ RSS every 5 minutes; pushes only when there are changes.
-    - cron: "*/5 * * * *"
+    # Offset +2 min from trending publish to reduce simultaneous git pushes.
+    - cron: "2,7,12,17,22,27,32,37,42,47,52,57 * * * *"
   workflow_dispatch:
   repository_dispatch:
     types: [publish-news]
