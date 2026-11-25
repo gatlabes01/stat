@@ -77,9 +77,12 @@
 .category-trending .vce-lay-b .entry-title a:hover {
   color: #cf4d35;
 }
+/* Match .vce-single .entry-headline on news articles */
+.category-trending .vce-lay-b .entry-headline p,
 .category-trending .trending-deck {
-  font-size: 1.5rem;
-  line-height: 1.55;
+  font-size: 1.8rem;
+  line-height: 1.5;
   color: #555;
-  margin: 0.5rem 0;
+  margin: 0.4rem 0 0.85rem;
+  max-width: none;
 }

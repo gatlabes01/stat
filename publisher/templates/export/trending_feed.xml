@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
 <channel>
-<title>{{ site_name }} — Trending Searches</title>
+<title>{{ site_name }} — Trending</title>
 <link>{{ abs_url('/') }}</link>
-<description>Hottest U.S. Google Trends keywords on Detailz</description>
+<description>Recent trending stories on {{ site_name }}</description>
 {% for t in topics %}
 <item>
   <title>{{ t.seo_title or t.keyword }}</title>

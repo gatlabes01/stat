@@ -18,17 +18,18 @@ TARGET_WORDS = 300
 TARGET_MIN = 260
 TARGET_MAX = 340
 
-TRENDING_SYSTEM = f"""You write ~{TARGET_WORDS}-word news briefs for Detailz about the given topic keyword.
+TRENDING_SYSTEM = f"""You write ~{TARGET_WORDS}-word news copy for Detailz about the given topic.
 Rules:
-- Write like a human editor: concrete, readable, varied sentence length.
-- Use ONLY facts from the provided headlines/sources — no invented quotes, scores, dates, or drama.
-- Do NOT mention Google, Google Trends, search volume, "trending", "spiking", or "people are searching".
-- Use the exact display keyword phrase exactly 2 or 3 times total in paragraphs (not more). Never in the FAQ.
-- Total word count across all paragraphs must be between {TARGET_MIN} and {TARGET_MAX}.
+- Sound like a wire editor or sports desk: short leads, active voice, no filler or self-help tone.
+- Use ONLY facts from the provided headlines — no invented quotes, scores, dates, or drama.
+- Never mention Google, search volume, trending, spiking, AI, briefings, explainers, or "what to watch next".
+- Banned phrases: plain-English, rundown, news cycle, catch up quickly, smart move, traction, puzzle pieces.
+- Use the display keyword exactly 2 or 3 times in paragraphs only (not FAQ).
+- Word count {TARGET_MIN}–{TARGET_MAX} across paragraphs.
 Return JSON:
   paragraphs: array of 5-8 strings (one paragraph each),
   keywords: 5-8 related lowercase phrases,
-  faq: optional 2 short Q&As about the STORY (not about Google).
+  faq: optional 2 short Q&As tied to the reporting (not meta/SEO questions).
 """
 
 
@@ -79,9 +80,8 @@ def add_keyword_mentions(paragraphs: list[str], keyword: str, minimum: int = 2) 
         return paragraphs
     name = _keyword_label(keyword)
     inserts = [
-        f"{name} is the thread tying these headlines together.",
-        f"Anyone reading up on {name} should start with the lead story, then compare how other outlets frame it.",
-        f"That’s the core of what’s moving the conversation around {name} right now.",
+        f"Reports on {name} line up on the same facts, even when the headlines differ.",
+        f"Coverage of {name} has picked up across sports and news desks in the last day.",
     ]
     result = list(paragraphs)
     pos = min(1, len(result))
@@ -113,60 +113,57 @@ def _fallback_paragraphs(item: TrendItem) -> list[str]:
     if item.news:
         lead = item.news[0]
         paras.append(
-            f"{name} is back in the headlines, and the piece getting the most traction opens like this: "
+            f"{name} drew fresh coverage after this report: "
             f"“{_strip_google_jargon(lead.title)}.”"
             + (f" ({lead.source})" if lead.source else "")
         )
         paras.append(
-            "The story usually gains steam when something tangible shifts — a result, a ruling, "
-            "a lineup call, or a late detail that re-frames what people thought they knew."
+            "Follow-up pieces usually hinge on one new detail — a score, a filing, an injury update, "
+            "or a quote from someone involved."
         )
         templates = (
-            "Another angle making the rounds: “{t}.”{src}",
-            "Outlets are also picking up: “{t}.”{src}",
-            "You'll see this headline in the mix too: “{t}.”{src}",
+            "{label} also ran: “{t}.”",
+            "From {label}: “{t}.”",
+            "Another report: “{t}.” ({label})",
         )
         for i, n in enumerate(item.news[1:4]):
             if not n.title:
                 continue
-            src = f" ({n.source})" if n.source else ""
-            t = templates[i % len(templates)].format(t=_strip_google_jargon(n.title), src=src)
+            label = n.source or "Elsewhere"
+            t = templates[i % len(templates)].format(
+                t=_strip_google_jargon(n.title), label=label
+            )
             paras.append(t)
     else:
+        paras.append(f"Major outlets had not filed a lead story on {name} at publish time.")
         paras.append(
-            f"{name} is on readers’ radars even before a single definitive headline lands — "
-            "watch for the first major outlet to set the narrative."
-        )
-        paras.append(
-            "Until then, the smart move is to note who would be affected and which beats "
-            "(sports, politics, entertainment) are likely to own the follow-ups."
+            "When the first report lands, expect sports, politics, or entertainment desks "
+            "to pick it up depending on the topic."
         )
 
     paras.append(
-        "To catch up quickly, read the lead story first, then scan whether later pieces add new facts "
-        "or mostly repeat the same quotes and timelines."
+        "The links below are the same headlines summarized here — use them for full context "
+        "and attribution."
     )
     paras.append(
-        f"Before you bounce, here’s why {name} still matters in this news cycle: "
-        "each linked report is a piece of the same puzzle, not a dozen separate stories."
+        f"Across those pieces, {name} shows up where the facts overlap, not as a separate "
+        "narrative in every outlet."
     )
 
     fillers = [
         (
-            "Stories like this tend to move in waves — a first report lands, analysts react, "
-            "and then officials or principals either confirm or push back."
+            "Editors often tighten the story after the first push, when principals comment "
+            "or league or agency sources weigh in."
         ),
         (
-            "If you only remember one thing, remember the distinction between confirmed updates "
-            "and speculation dressed up as reporting."
+            "Confirmed details and anonymous tips travel at different speeds; "
+            "treat single-source items accordingly."
         ),
         (
-            "Nothing here replaces primary sources. Use the links below, then decide for yourself "
-            "what counts as solid versus what still needs a second source."
+            "When two or more outlets match on the same fact, that detail usually holds."
         ),
         (
-            "When multiple outlets echo the same core fact, that’s usually the spine you should "
-            "build your understanding around."
+            "Late updates can reverse an earlier line — check timestamps on the source stories."
         ),
     ]
     fi = 0
@@ -181,12 +178,12 @@ def _fallback_paragraphs(item: TrendItem) -> list[str]:
 def _faq_fallback(keyword: str) -> list[dict[str, str]]:
     return [
         {
-            "q": "What’s the main story here?",
-            "a": "Whatever the linked headlines above are covering — read those pieces first for names, dates, and claims.",
+            "q": "What are outlets reporting?",
+            "a": "See the source links above for the full headlines and reporting.",
         },
         {
-            "q": "What should I watch next?",
-            "a": "Follow-up reporting from the same outlets and any official statements tied to the story.",
+            "q": "Could this change?",
+            "a": "Yes — new statements or filings often shift how the story is framed.",
         },
     ]
 
@@ -209,7 +206,7 @@ def _faq_to_html(faq: list[dict[str, str]]) -> str:
     items = "".join(
         f"<h3>{html.escape(f['q'])}</h3><p>{html.escape(f['a'])}</p>" for f in faq if f.get("q")
     )
-    return f'<section class="trending-faq" aria-label="FAQ"><h2 id="faq">Quick answers</h2>{items}</section>'
+    return f'<section class="trending-faq" aria-label="FAQ"><h2 id="faq">Background</h2>{items}</section>'
 
 
 def _paragraphs_to_html(paragraphs: list[str], image_url: str | None, keyword: str) -> str:
@@ -281,7 +278,7 @@ def compose_article_html(item: TrendItem, image_url: str | None) -> tuple[str, l
             for s in sources
             if s.get("url")
         )
-        body_html += f'<p class="trending-sources"><strong>Further reading:</strong> {links}</p>'
+        body_html += f'<p class="trending-sources"><strong>Sources:</strong> {links}</p>'
     return body_html, faq, kw_list
 
 

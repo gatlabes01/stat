@@ -59,14 +59,14 @@ def human_seo_title(keyword: str, news_titles: list[str]) -> str:
         angle = _short_angle(news_titles[0], 8)
         base = f"{subj}: {angle}" if len(f"{subj}: {angle}") <= 54 else f"{subj}: {angle[:40].rsplit(' ', 1)[0]}…"
         return f"{base} | Detailz"
-    return f"{subj} — What You Need to Know | Detailz"
+    return f"{subj} | Detailz"
 
 
 def human_h1(keyword: str, news_titles: list[str]) -> str:
     subj = smart_display(keyword)
     if news_titles:
         return f"{subj}: {_short_angle(news_titles[0], 10)}"
-    return f"The latest on {subj}"
+    return subj
 
 
 def human_list_title(keyword: str, news_titles: list[str]) -> str:
@@ -77,13 +77,24 @@ def human_list_title(keyword: str, news_titles: list[str]) -> str:
 
 
 def human_meta_description(keyword: str, news_titles: list[str]) -> str:
-    subj = smart_display(keyword)
     if news_titles:
-        lead = _short_angle(news_titles[0], 14)
-        text = f"A plain-English rundown on {subj} — what’s in the news, why it matters, and what to watch next. {lead}"
+        text = _clean_news_line(news_titles[0])
     else:
-        text = f"Background and context on {subj}: what happened, who’s involved, and why readers are paying attention."
+        text = f"Coverage and updates on {smart_display(keyword)}."
     return re.sub(r"\s+", " ", text)[:160]
+
+
+def human_list_deck(keyword: str, news_titles: list[str]) -> str:
+    """Hub excerpt: lead headline + optional second angle (not SEO boilerplate)."""
+    if not news_titles:
+        return f"Reports and updates on {smart_display(keyword)}."
+    lead = _clean_news_line(news_titles[0])
+    if len(news_titles) > 1:
+        extra = _short_angle(news_titles[1], 18)
+        text = f"{lead} Also in the mix: {extra}"
+    else:
+        text = lead
+    return re.sub(r"\s+", " ", text)[:300]
 
 
 def apply_polished_titles(topic: dict) -> dict:
@@ -94,4 +105,5 @@ def apply_polished_titles(topic: dict) -> dict:
     topic["seo_title"] = human_seo_title(kw, news)
     topic["meta_description"] = human_meta_description(kw, news)
     topic["meta_description_short"] = topic["meta_description"][:300]
+    topic["list_deck"] = human_list_deck(kw, news)
     return topic

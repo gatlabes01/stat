@@ -1,7 +1,7 @@
 {% from "export/_adsense.html" import adsense_head, adsense_unit %}
 {% from "export/_trending_seo.html" import trending_hub_seo %}
-{% set title = 'Trending Now — News Briefs & Explainers | Detailz' %}
-{% set description = 'Short, readable briefs on the topics people are talking about — context, headlines, and what to watch next. Updated automatically on Detailz.' %}
+{% set title = 'Trending | Detailz' %}
+{% set description = 'Stories and topics in the news right now on Detailz.' %}
 {% set canonical = abs_url('/') %}
 {% set seo = trending_hub_seo(title, description, canonical, item_list, site_name, site_url) %}
 <!DOCTYPE html>
@@ -50,14 +50,13 @@
 <div id="content" class="container site-content vce-sid-right">
   <div id="primary" class="vce-main-content">
     <main id="main" class="main-box">
-      <header class="entry-header"><h1 class="entry-title">Latest trending searches</h1></header>
+      <header class="entry-header"><h1 class="entry-title">Trending</h1></header>
       {{ adsense_unit() }}
-      <p class="entry-headline">{{ total }} readable brief{{ 's' if total != 1 else '' }} (~300 words each) on what’s in the news — written for humans, not search dashboards.</p>
       <div class="vce-loop-wrap">
       {% for t in topics %}
         <article class="vce-lay-b post">
           <h2 class="entry-title"><a href="{{ url_for('/' ~ t.slug ~ '/') }}">{{ t.display_title or t.h1 or t.keyword }}</a></h2>
-          <p class="trending-deck">{{ t.meta_description_short or t.meta_description }}</p>
+          <div class="entry-headline"><p>{{ t.list_deck or t.meta_description_short or t.meta_description }}</p></div>
           <p class="entry-meta">{{ t.published_label }}</p>
         </article>
         {% if loop.index is divisibleby 4 %}{{ adsense_unit() }}{% endif %}

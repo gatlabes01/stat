@@ -3,6 +3,7 @@
 {% set title = topic['seo_title'] or topic['keyword'] %}
 {% set h1 = topic['h1'] or topic['keyword'] %}
 {% set description = topic['meta_description_short'] or topic['meta_description'] or title %}
+{% set deck = topic['list_deck'] or description %}
 {% set seo = trending_article_seo(title, h1, description, canonical, topic['image_url_abs'] or '', topic['published_iso'], topic['modified_iso'], topic['keyword'], topic['slug'], topic['faq_schema'], site_name, site_url, trending_hub_url) %}
 <!DOCTYPE html>
 <html lang="en-US" class="no-js no-svg" itemscope itemtype="https://schema.org/Article">
@@ -58,10 +59,10 @@
       <article class="vce-single post type-post status-publish hentry category-trending" itemprop="articleBody">
         <header class="entry-header">
           <h1 class="entry-title" itemprop="headline">{{ h1 }}</h1>
-          <p class="entry-meta"><time datetime="{{ topic['published_iso'] }}" itemprop="datePublished">{{ topic['published_label'] }}</time> · Detailz briefing</p>
+          <p class="entry-meta"><time datetime="{{ topic['published_iso'] }}" itemprop="datePublished">{{ topic['published_label'] }}</time></p>
         </header>
         {{ adsense_unit() }}
-        <div class="entry-headline"><p itemprop="description">{{ description }}</p></div>
+        <div class="entry-headline"><p itemprop="description">{{ deck }}</p></div>
         {{ adsense_unit() }}
         <div class="entry-content">
           {{ topic['article_body']|safe }}

@@ -12,6 +12,7 @@ from app.config import SETTINGS
 from app.paths import project_root
 from app.format_dates import format_story_date, to_iso8601
 from app import trending_db as tdb
+from app.sync import COPYRIGHT_NOTICE
 from app.trending_enrich import _faq_fallback, _faq_to_schema, refresh_topic_body
 from app.trending_titles import apply_polished_titles
 def export_root() -> Path:
@@ -95,7 +96,7 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
             "trending_base_path": SETTINGS.trending_base_path,
             "url_for": _url_for,
             "abs_url": _abs_url,
-            "copyright_notice": "Trending explainers cite public search and news signals. Not affiliated with Google.",
+            "copyright_notice": COPYRIGHT_NOTICE,
             "google_site_verification": SETTINGS.google_site_verification,
         }
     )
@@ -254,6 +255,11 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
         if dest_static.exists():
             shutil.rmtree(dest_static)
         shutil.copytree(static_src, dest_static)
+        news_css = static_src / "news.css"
+        if news_css.exists():
+            news_static = export_root() / "news" / "static"
+            news_static.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(news_css, news_static / "news.css")
 
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     (trend_out / "publish-meta.json").write_text(
