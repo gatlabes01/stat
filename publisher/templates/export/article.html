@@ -23,6 +23,19 @@
         {% endif %}
         <div class="entry-content">
           {{ story['article_body']|safe }}
+          {% if trending_links %}
+          <section class="news-trending-cross" aria-label="Trending on Detailz">
+            <h2>Trending now</h2>
+            <ul>
+            {% for t in trending_links %}
+              <li><a href="{{ t.url }}">{{ t.title }}</a></li>
+            {% endfor %}
+            </ul>
+            <p><a href="/trending/">All trending topics</a></p>
+          </section>
+          {% else %}
+          <p class="news-trending-cross"><a href="/trending/">Trending searches on Detailz</a></p>
+          {% endif %}
         </div>
         {{ adsense_unit() }}
       </article>

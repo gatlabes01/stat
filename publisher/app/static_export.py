@@ -77,11 +77,32 @@ def _copy_tree(src: Path, dest: Path) -> None:
     shutil.copytree(src, dest)
 
 
+def _trending_sidebar_links(limit: int = 10) -> list[dict]:
+    try:
+        from app import trending_db as tdb
+
+        conn = tdb.connect()
+        tdb.init_db(conn)
+        rows = tdb.published_topics(conn, limit=limit)
+        conn.close()
+    except Exception:
+        return []
+    base = SETTINGS.trending_base_path.rstrip("/")
+    return [
+        {
+            "url": f"{base}/{dict(r)['slug']}/",
+            "title": dict(r).get("h1") or dict(r).get("keyword") or dict(r)["slug"],
+        }
+        for r in rows
+    ]
+
+
 def export_static_site(export_dir: Path | None = None) -> dict:
     """Export TMZ articles under site/news/ (or NEWS_BASE_PATH). Does not touch site root."""
     out = export_dir or export_root()
     out.mkdir(parents=True, exist_ok=True)
     news_out = news_root_dir(out)
+    trending_links = _trending_sidebar_links()
 
     conn = db.connect()
     db.init_db(conn)
@@ -147,7 +168,12 @@ def export_static_site(export_dir: Path | None = None) -> dict:
         meta_desc = (story.get("meta_description") or story.get("seo_title") or story.get("title") or "")[:300]
         story["meta_description_short"] = meta_desc
         (dest / "index.html").write_text(
-            article_tpl.render(story=story, canonical=canonical, extra_head=""),
+            article_tpl.render(
+                story=story,
+                canonical=canonical,
+                extra_head="",
+                trending_links=trending_links,
+            ),
             encoding="utf-8",
         )
 

@@ -15,6 +15,7 @@ from app import trending_db as tdb
 from app.seo_ping import ensure_indexnow_key_file
 from app.sync import COPYRIGHT_NOTICE
 from app.trending_enrich import _faq_fallback, _faq_to_schema, refresh_topic_body
+from app.trending_links import pick_cluster_topics, pick_related_topics, pick_topic_tags
 from app.trending_titles import apply_polished_titles
 def export_root() -> Path:
     import os
@@ -174,17 +175,27 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
         topic = slug_map[dict(row)["slug"]]
         slug = topic["slug"]
         dest = trend_out / slug
-        related = [
-            {"slug": s["slug"], "title": s.get("seo_title") or s["keyword"], "url": _url_for(f"/{s['slug']}/")}
+        related = pick_related_topics(topic, stories_for_index, url_for=_url_for, limit=12)
+        cluster = pick_cluster_topics(topic, stories_for_index, url_for=_url_for, limit=10)
+        tag_links = pick_topic_tags(topic, stories_for_index, url_for=_url_for, limit=8)
+        latest_topics = [
+            {
+                "slug": s["slug"],
+                "title": s.get("display_title") or s.get("h1") or s["keyword"],
+                "url": _url_for(f"/{s['slug']}/"),
+            }
             for s in stories_for_index
             if s["slug"] != slug
-        ][:5]
+        ][:8]
         canonical = _abs_url(f"/{slug}/")
         (dest / "index.html").write_text(
             article_tpl.render(
                 topic=topic,
                 canonical=canonical,
                 related_topics=related,
+                cluster_topics=cluster,
+                tag_links=tag_links,
+                latest_topics=latest_topics,
                 trending_hub_url=_abs_url("/"),
             ),
             encoding="utf-8",

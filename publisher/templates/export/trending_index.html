@@ -62,6 +62,16 @@
         {% if loop.index is divisibleby 4 %}{{ adsense_unit() }}{% endif %}
       {% endfor %}
       </div>
+      {% if topics|length > 1 %}
+      <nav class="trending-explore" aria-label="Explore trending topics">
+        <h2>Explore trending topics</h2>
+        <ul class="trending-tag-list trending-tag-list--hub">
+        {% for t in topics[:48] %}
+          <li><a href="{{ url_for('/' ~ t.slug ~ '/') }}">{{ t.display_title or t.h1 or t.keyword }}</a></li>
+        {% endfor %}
+        </ul>
+      </nav>
+      {% endif %}
       {{ adsense_unit() }}
     </main>
   </div>
