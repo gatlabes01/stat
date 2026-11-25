@@ -12,7 +12,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from app import database as db
 from app.config import SETTINGS
 from app.paths import project_root
-from app.format_dates import format_story_date
+from app.format_dates import format_story_date, to_iso8601
 from app.sync import COPYRIGHT_NOTICE
 
 TEMPLATES = project_root() / "templates"
@@ -142,6 +142,9 @@ def export_static_site(export_dir: Path | None = None) -> dict:
         else:
             story["image_url_abs"] = ""
         story["published_label"] = format_story_date(story.get("published_at"))
+        story["published_iso"] = to_iso8601(story.get("published_at"))
+        meta_desc = (story.get("meta_description") or story.get("seo_title") or story.get("title") or "")[:300]
+        story["meta_description_short"] = meta_desc
         (dest / "index.html").write_text(
             article_tpl.render(story=story, canonical=canonical, extra_head=""),
             encoding="utf-8",

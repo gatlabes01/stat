@@ -5,7 +5,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from app.config import SETTINGS
-from app.static_export import news_root_dir
+from app.seo_ping import ping_sitemap
+from app.static_export import news_root_dir, _abs_url
 
 
 def _run(cmd: list[str], cwd: Path) -> subprocess.CompletedProcess:
@@ -49,9 +50,12 @@ def publish_to_github(export_dir: Path | None = None, message: str | None = None
     if push.returncode != 0:
         raise RuntimeError(push.stderr or push.stdout)
 
+    ping = ping_sitemap(_abs_url("/sitemap.xml"))
+
     return {
         "pushed": True,
         "branch": SETTINGS.git_branch,
         "remote": SETTINGS.git_remote,
         "commit_message": commit_msg,
+        "sitemap_ping": ping,
     }
