@@ -37,17 +37,19 @@ def run_once(*, deploy: str) -> None:
     sync_result = sync_trending()
     log.info("Sync: %s", sync_result)
 
-    if not sync_result.get("new_articles"):
-        log.info("No new trending keywords; still exporting sitemap/index for freshness")
-    else:
-        log.info("Created %s new trending articles", sync_result["new_articles"])
+    log.info(
+        "Trending sync: %s new, %s updated",
+        sync_result.get("new_articles"),
+        sync_result.get("updated_articles"),
+    )
 
     log.info("Exporting /trending/...")
     export_result = export_trending_site()
     log.info("Export: %s", export_result)
 
     if deploy == "github":
-        pub = publish_trending_to_github(new_slugs=sync_result.get("new_slugs") or [])
+        urls = (sync_result.get("new_slugs") or []) + (sync_result.get("updated_slugs") or [])
+        pub = publish_trending_to_github(new_slugs=urls)
         if pub.get("pushed"):
             log.info("Pushed: %s", pub.get("commit_message"))
             log.info("Sitemap ping: %s", pub.get("sitemap_ping"))

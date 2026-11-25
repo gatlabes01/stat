@@ -88,8 +88,6 @@ jobs:
 
           TRENDING_MAX_PER_RUN: "1"
 
-          TRENDING_MAX_PER_KEYWORD: "3"
-
           TRENDING_MIN_TRAFFIC_SCORE: "200"
 
           REPO_ROOT: ${{ github.workspace }}

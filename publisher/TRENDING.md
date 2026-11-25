@@ -14,8 +14,7 @@
 ## Env (Actions or local)
 ```
 TRENDING_MAX_PER_RUN=1
-TRENDING_MAX_PER_KEYWORD=3
-Up to 3 URLs per keyword; edition 2/3 only when Google Trends news headlines change vs the latest article for that keyword.
+One URL per keyword. When headlines change, the same page updates in place (fast refresh). New URL only for brand-new Trends keywords (up to MAX_PER_RUN per cycle).
 TRENDING_MIN_TRAFFIC_SCORE=200
 TRENDING_GEO=US
 ```

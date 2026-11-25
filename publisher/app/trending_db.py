@@ -160,6 +160,17 @@ def insert_topic(conn: sqlite3.Connection, row: dict) -> int:
     return int(cur.lastrowid)
 
 
+def update_topic(conn: sqlite3.Connection, topic_id: int, row: dict) -> None:
+    if not row:
+        return
+    sets = ", ".join(f"{k} = ?" for k in row)
+    conn.execute(
+        f"UPDATE trending_topics SET {sets} WHERE id = ?",
+        (*row.values(), topic_id),
+    )
+    conn.commit()
+
+
 def all_published(conn: sqlite3.Connection):
     return conn.execute(
         """
