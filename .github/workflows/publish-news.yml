@@ -2,7 +2,7 @@ name: Publish TMZ news
 
 on:
   schedule:
-    # GitHub's minimum schedule interval is 5 minutes; polls live RSS and pushes only when there are changes.
+    # Poll TMZ RSS every 5 minutes; pushes only when there are changes.
     - cron: "*/5 * * * *"
   workflow_dispatch:
   repository_dispatch:

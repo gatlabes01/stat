@@ -8,7 +8,7 @@
 
 ## GitHub Action
 - Workflow: `.github/workflows/publish-trending.yml`
-- Schedule: every 10 minutes + manual `workflow_dispatch`
+- Schedule: every 5 minutes + manual `workflow_dispatch`
 - Requires secret: `OPENAI_API_KEY` (optional; without it, template copy is used)
 
 ## Env (Actions or local)

@@ -6,9 +6,9 @@ on:
 
   schedule:
 
-  # Google Trends refresh often; poll every 10 minutes (max 5 new articles/run via env).
+  # Poll Trends RSS every 5 minutes (max 5 new articles/run via env).
 
-    - cron: "*/10 * * * *"
+    - cron: "*/5 * * * *"
 
   workflow_dispatch:
 
