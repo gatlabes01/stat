@@ -12,7 +12,7 @@ from app.config import SETTINGS
 from app.paths import project_root
 from app.format_dates import format_story_date, to_iso8601
 from app import trending_db as tdb
-from app.trending_enrich import _faq_fallback, _faq_to_schema
+from app.trending_enrich import _faq_fallback, _faq_to_schema, refresh_topic_body
 from app.trending_titles import apply_polished_titles
 def export_root() -> Path:
     import os
@@ -123,6 +123,7 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
     stories_for_index: list[dict] = []
     for row in rows:
         topic = dict(row)
+        topic = refresh_topic_body(topic)
         topic["article_body"] = _rewrite_body(topic.get("article_body") or "")
         slug = topic["slug"]
         dest = trend_out / slug

@@ -58,7 +58,7 @@
       <article class="vce-single post type-post status-publish hentry category-trending" itemprop="articleBody">
         <header class="entry-header">
           <h1 class="entry-title" itemprop="headline">{{ h1 }}</h1>
-          <p class="entry-meta"><time datetime="{{ topic['published_iso'] }}" itemprop="datePublished">{{ topic['published_label'] }}</time> · Google Trends · {{ topic['approx_traffic'] or 'Rising' }} U.S. searches</p>
+          <p class="entry-meta"><time datetime="{{ topic['published_iso'] }}" itemprop="datePublished">{{ topic['published_label'] }}</time> · Detailz briefing</p>
         </header>
         {{ adsense_unit() }}
         <div class="entry-headline"><p itemprop="description">{{ description }}</p></div>
@@ -66,8 +66,8 @@
         <div class="entry-content">
           {{ topic['article_body']|safe }}
           {% if related_topics %}
-          <section class="trending-related" aria-label="More trending topics">
-            <h2>More trending searches</h2>
+          <section class="trending-related" aria-label="More stories">
+            <h2>More stories</h2>
             <ul>
             {% for r in related_topics %}
               <li><a href="{{ r.url }}">{{ r.title }}</a></li>
