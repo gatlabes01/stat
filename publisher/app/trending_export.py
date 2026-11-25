@@ -107,7 +107,6 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
     index_tpl = env.get_template("export/trending_index.html")
     feed_tpl = env.get_template("export/trending_feed.xml")
 
-    reserved = {"archive", "media", "static", "articles"}
     legacy_articles = trend_out / "articles"
     if legacy_articles.exists():
         shutil.rmtree(legacy_articles, ignore_errors=True)
@@ -162,21 +161,6 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
         )
 
         stories_for_index.append(topic)
-
-    live_slugs = {dict(r)["slug"] for r in rows}
-    if archive_root.exists():
-        stale = [
-            index.parent
-            for index in list(archive_root.rglob("index.html"))
-            if index.parent.name not in live_slugs
-        ]
-        for slug_dir in stale:
-            shutil.rmtree(slug_dir, ignore_errors=True)
-    for child in trend_out.iterdir():
-        if not child.is_dir() or child.name in reserved or child.name in live_slugs:
-            continue
-        if child.name not in ("archive", "media", "static"):
-            shutil.rmtree(child, ignore_errors=True)
 
     # Second pass: add related links now that index list is built
     for topic in stories_for_index:
@@ -261,7 +245,7 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
     media_dest.mkdir(parents=True, exist_ok=True)
     if media_src.exists():
         for slug_dir in media_src.iterdir():
-            if not slug_dir.is_dir() or slug_dir.name not in live_slugs:
+            if not slug_dir.is_dir():
                 continue
             target = media_dest / slug_dir.name
             if target.exists():
