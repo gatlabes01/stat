@@ -1,0 +1,11 @@
+/* GTA 6 guide hub — Voice-friendly lists */
+.gta6-hub-content h2 { margin-top: 2rem; }
+.gta6-chapter { margin: 1.5rem 0 2rem; }
+.gta6-chapter h3 { font-size: 2.2rem; margin-bottom: 0.75rem; }
+.gta6-chapter h4 { font-size: 1.8rem; margin: 1rem 0 0.5rem; color: #333; }
+.gta6-mission-list { list-style: none; padding: 0; margin: 0; }
+.gta6-mission-list li { margin: 0.35rem 0; font-size: 1.5rem; }
+.gta6-mission-list a { text-decoration: none; border-bottom: 1px solid #cf4d35; }
+.gta6-chapter-label { color: #888; font-size: 1.4rem; margin-top: 0.5rem; }
+.gta6-mission-nav ul { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; list-style: none; padding: 1.5rem 0; margin: 0; border-top: 1px solid #eee; }
+.gta6-questline { margin-bottom: 1.25rem; }

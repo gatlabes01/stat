@@ -1,0 +1,545 @@
+{
+  "chapters": [
+    {
+      "id": "prologue",
+      "title": "Prologue",
+      "missions": [
+        "Prologue"
+      ]
+    },
+    {
+      "id": "chapter-1",
+      "title": "Chapter 1",
+      "missions": [
+        "Gone Fishing",
+        "Gear Up (Pick Up Another Gun)",
+        "Lab Fees (Collect Brian's Rent)",
+        "Just a Scratch (Fix Your Car)",
+        "Unwanted Attention (Go See Cal)",
+        "Pipework (Collect Mandy's Rent)",
+        "Optional – Get Shirley's Rum (Missable)",
+        "Optional – Steal the Scooter (Missable)",
+        "Hey Arnold! (Meet Brian)",
+        "Island Dreams (Work for Kenton)",
+        "Feng Shui (Meet Cal)",
+        "Optional – Pick up Groceries & Drop Off Groceries",
+        "Optional – Buy Flowers",
+        "Optional – Buy Lucia a Necklace",
+        "Optional – Get The Chop",
+        "Optional – Get Lucia's Clothes",
+        "Coming Home (Lucia's Release)",
+        "Clean Up After Donnie (Donnie's Drop)",
+        "Buck Me (Set Up Bank Account)",
+        "Down to Earth (Meet Brian)",
+        "Deposit Cash Into BuckMe",
+        "Save for the Future",
+        "Optional – Find the Lost Drugs",
+        "Day Release (Meet Mattia & Kat)",
+        "Optional – Clock Out",
+        "Clear Skies (Join Donnie On A Job)",
+        "Building a Life",
+        "Swamped (Meet Brian)",
+        "Don Gone (Head to Donnie's Trailer)",
+        "Donnie's Lost Drugs",
+        "Recalibration (Talk to Lucia)",
+        "Tourist Trap (Take Up Mattia's Offer)",
+        "Home Sweet Home",
+        "Discharge Time"
+      ]
+    },
+    {
+      "id": "chapter-2",
+      "title": "Chapter 2",
+      "missions": [
+        "What's in the Bag?",
+        "Take Care of Jason (Play Nurse)",
+        "Overnight Charges (See Linda, The Manager)",
+        "Just Moved In",
+        "Girl's Trip (Find Painkillers)",
+        "Optional – Pick Up A Gun",
+        "Moses (Take A Vehicle to Moses)",
+        "New Look",
+        "How Do I Look?",
+        "Painkiller Supplier",
+        "Ambulance Chaser (Move the Ambulance)",
+        "Optional – Check Out McKittrick Farm (Kyle Quest 1)",
+        "Behind on Payments",
+        "Slam Dunk (Find Painkillers)",
+        "Optional – Collect Chemicals for Kyle (Kyle Quest 2)",
+        "Daily Driver (Steal the Crawler for Moses)",
+        "Breakfast Run (Check on Jason)",
+        "Coffee Break",
+        "Optional – Thrillbillies (Check Out the Mud Club) (Billy Quest 1)",
+        "Optional – Twist Wrist, Smash, Grab (Join Billy on a Job) (Billy Quest 2)",
+        "Optional – Hit Avery Pawn",
+        "Optional – Hit Kingpin Bowling",
+        "Optional – Impounded Vehicle",
+        "Prepare for Vice City",
+        "Optional – Veteran Hunted (Meet Bret) (*JASON ONLY*) (Bret Quest 1)",
+        "Afternoon Delight (Rob Vicki's Boss)",
+        "Checking Out (Move to Vice City)"
+      ]
+    },
+    {
+      "id": "chapter-3",
+      "title": "Chapter 3",
+      "missions": [
+        "Welcome to Vice City",
+        "Dealer's Choice (Go See Dre'Quan) (*JASON ONLY*)",
+        "Dubious Provenance (Visit the Antique Store)",
+        "Mami Knows Best (Catch Up With Mia) (*LUCIA ONLY*)",
+        "Optional – Get Your Wheels",
+        "Optional – Join a Street Race (Yago Quest 1)",
+        "Here, Kitty Kitty (Speak with Tyrone) (*JASON ONLY*)",
+        "Send Money to Lorena",
+        "Encrypted Hard Drive",
+        "Boobie Time (Talk to Boobie) (*JASON ONLY*)",
+        "Optional – Buddy? (Check on Kyle) (Kyle Questline End)",
+        "Meet the Heders (Meet Brian & Lori)",
+        "Yasmani's Jewelry Jobs (Hit Richardson Jewelry, Hit Donovan Banks & Co, Hit Casa de Empeno, Sell Jewelry to Yasmani)",
+        "Optional – Bumper to Bumper (Mentor Yago) (*JASON ONLY*) (Yago Quest 2)",
+        "Car Service (Steal The Car for Raul) (*LUCIA ONLY*)",
+        "Send More Money to Lorena",
+        "Top Billing (Watch the Real Dimez)",
+        "First Impressions (Meeting with Raul)",
+        "Crosstown Traffic (Meet Raul) (*LUCIA ONLY*) / Meet Karim (*JASON ONLY*)",
+        "Credit Check (Meet Raul's Crew)",
+        "Clonin' Keys, Makin' GS (Steal the Zorrusso for Randy)",
+        "Ride Or Die (Meet Dre'Quan) (*JASON ONLY*)",
+        "Raul's Next Job",
+        "Optional – Race Against Yago (Yago Quest 3) (Time-Sensitive, Missable)",
+        "[The Cartel Heist] Sinfrontera National Bank (Scope Out the Bank)",
+        "[The Cartel Heist] Security Expert",
+        "Caught Slipping",
+        "[The Cartel Heist] Heist Planning",
+        "[The Cartel Heist] Company Property (Meet Brian)",
+        "[The Cartel Heist] Safe Word (Steal the Practice Safe)",
+        "[The Cartel Heist] The Missing Link (Meet Andrea) (*LUCIA ONLY*)",
+        "Optional – Mall Rats (Join Billy on a Job) (*SOLO ONLY*) (Billy Quest 3)",
+        "Optional – Brother To Brother (Back up Yago) (Yago Questline End)",
+        "Cooties (Shoot the Music Video)",
+        "[The Cartel Heist] Hidden Charges (Meet at the Planning Room / Prepping the Explosives)",
+        "Bricked Up (Return to the Apartment)",
+        "South Leonida Real Estate (Meet Mia) (*LUCIA ONLY*)",
+        "[The Cartel Heist] The Cartel Heist (Start the Heist / Wait for Raul to get in Touch)"
+      ]
+    },
+    {
+      "id": "chapter-4",
+      "title": "Chapter 4",
+      "missions": [
+        "Ocean Beach",
+        "Another Life",
+        "Pool Day",
+        "Company Cars (Speak to the Concierge)",
+        "Lawyer Up (Meet Abe Gonzalez)",
+        "Heavy Lifting (Bring Raul the Hard Drive)",
+        "Optional – It's A Date!",
+        "Party Hard (Work Personal Security)",
+        "Pay Abe's Fee",
+        "Photo/Shoot (Shoot a Promo)",
+        "Optional – Bad Driver! (Find Felipe)",
+        "Optional – Attend Eddie Acosta's Party (*SOLO ONLY*) (Eddie Acosta Quest)",
+        "Optional – Dre'Quan's Gift",
+        "[VCIA Takedown] Making Gainz (Meet Raul / Raul's Plan) (*LUCIA ONLY*)",
+        "[VCIA Takedown] Blood Sweat and Gear (Work Out) (*LUCIA ONLY*)",
+        "[VCIA Takedown] Too Much Baggage (Scope Out the Airport) (*JASON ONLY*)",
+        "Watch It (Meet Dre'Quan) (*JASON ONLY*)",
+        "[VCIA Takedown] Amateur Hour (Workout) (*LUCIA ONLY*)",
+        "[VCIA Takedown] Call Nate (*LUCIA ONLY*)",
+        "[VCIA Takedown] Cash Injections (Hang Out With Nate) (*LUCIA ONLY*)",
+        "[VCIA Takedown] Dirty Work (Deal with Raina)",
+        "[VCIA Takedown] Nate Will Be in Touch (Help Kordell's Crew)",
+        "Adventures in Babysitting (Work Security for Andrés) (*JASON ONLY*)",
+        "Rafa's Kidnapping (*JASON ONLY*)",
+        "Fresh Evidence (Meet Dre'Quan) (*JASON ONLY*)",
+        "Child's Play (Rescue Rafa from Kidnappers)",
+        "Optional – This is a Free Call From… (Pick up Shayna) (*LUCIA ONLY*, Time-Sensitive, Missable)",
+        "[VCIA Takedown] Power Play (Help Kordell's Crew) (*LUCIA ONLY*)",
+        "[VCIA Takedown] Close Surveillance (Spy on the Bodybuilders) (*JASON ONLY*)",
+        "[VCIA Takedown] Delivery Method (Help Andrea) (*JASON ONLY*)",
+        "[VCIA Takedown] Team Building (Meet Kordell) (*LUCIA ONLY*)",
+        "[VCIA Takedown] Fully Catered (Steal a Catering Truck)",
+        "[VCIA Takedown] Heist Plans in Place",
+        "Headliners (Help With The Launch Party)",
+        "[VCIA Takedown] VCIA Takedown (Start the Airport Heist)",
+        "Tie Up Loose Ends",
+        "Optional – That's Where The Money Is… (Wait at the Cafe)",
+        "Call Valentina Back",
+        "Sunset (Stop by the Front Desk)",
+        "Starting From Zero"
+      ]
+    },
+    {
+      "id": "chapter-5",
+      "title": "Chapter 5",
+      "missions": [
+        "Bird in the Hand",
+        "Taking Liberties",
+        "Doggie Bag (Meet Vinny)",
+        "VC Baby (Talk to Mattia)",
+        "Operation Savage Glory",
+        "Honest Abe (Negotiate a Deal with Abe)",
+        "Unfinished Business",
+        "Pay Abe's Fee",
+        "Protective Custody (Meet with Abe)",
+        "The End of the Road",
+        "Endings"
+      ]
+    }
+  ],
+  "strangers_and_freaks": [
+    {
+      "id": "snf-chapter-1",
+      "title": "Strangers & Freaks — Chapter 1",
+      "questlines": [
+        {
+          "id": "shirley",
+          "title": "Shirley",
+          "missions": [
+            {
+              "label": "Get Shirley's Rum – Missable, Chapter 1 Exclusive",
+              "same_as_chapter": "chapter-1",
+              "same_as_mission": "Optional – Get Shirley's Rum (Missable)"
+            },
+            {
+              "label": "Steal the Scooter – Missable, Chapter 1 Exclusive",
+              "same_as_chapter": "chapter-1",
+              "same_as_mission": "Optional – Steal the Scooter (Missable)"
+            }
+          ]
+        },
+        {
+          "id": "kenton",
+          "title": "Kenton",
+          "missions": [
+            {
+              "label": "Search the Dive Sites (Kenton Sets / Shipwrecks)"
+            }
+          ]
+        },
+        {
+          "id": "cal",
+          "title": "Cal",
+          "missions": [
+            {
+              "label": "Catch a Bigger Fish"
+            }
+          ]
+        },
+        {
+          "id": "kirk",
+          "title": "Kirk (Skunk Ape / Mr. Mangrove)",
+          "missions": [
+            {
+              "label": "Search for the Skunk Ape (Skunk Apeology 101) (*NIGHT ONLY*)"
+            },
+            {
+              "label": "Search for Tree Effigies"
+            },
+            {
+              "label": "Help Kirk Find Mr. Mangrove (Advanced Skunk Apeonomics) (*LUCIA ONLY*, *NIGHT ONLY*)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "snf-chapter-2",
+      "title": "Strangers & Freaks — Chapter 2",
+      "questlines": [
+        {
+          "id": "kyle",
+          "title": "Kyle",
+          "missions": [
+            {
+              "label": "Check Out McKittrick Farm",
+              "same_as_chapter": "chapter-2",
+              "same_as_mission": "Optional – Check Out McKittrick Farm (Kyle Quest 1)"
+            },
+            {
+              "label": "Collect Chemicals for Kyle",
+              "same_as_chapter": "chapter-2",
+              "same_as_mission": "Optional – Collect Chemicals for Kyle (Kyle Quest 2)"
+            },
+            {
+              "label": "Buddy? (Check on Kyle)",
+              "same_as_chapter": "chapter-3",
+              "same_as_mission": "Optional – Buddy? (Check on Kyle) (Kyle Questline End)"
+            }
+          ]
+        },
+        {
+          "id": "alvan",
+          "title": "Alvan",
+          "missions": [
+            {
+              "label": "Gellhorn's Missing Tourists"
+            },
+            {
+              "label": "Missing Person (Return to the Trophy Room)"
+            }
+          ]
+        },
+        {
+          "id": "moses",
+          "title": "Moses",
+          "missions": [
+            {
+              "label": "Steal Vehicles for Moses"
+            },
+            {
+              "label": "Collect Moses' Gift"
+            }
+          ]
+        },
+        {
+          "id": "bret",
+          "title": "Bret Vogel",
+          "missions": [
+            {
+              "label": "Veteran Hunted (Meet Bret) (*JASON ONLY*)",
+              "same_as_chapter": "chapter-2",
+              "same_as_mission": "Optional – Veteran Hunted (Meet Bret) (*JASON ONLY*) (Bret Quest 1)"
+            },
+            {
+              "label": "Bret's Hunting Decks – Fair Game"
+            }
+          ]
+        },
+        {
+          "id": "billy",
+          "title": "Billy",
+          "missions": [
+            {
+              "label": "Thrillbillies (Check Out the Mud Club)",
+              "same_as_chapter": "chapter-2",
+              "same_as_mission": "Optional – Thrillbillies (Check Out the Mud Club) (Billy Quest 1)"
+            },
+            {
+              "label": "Twist Wrist, Smash, Grab (Join Billy on a Job)",
+              "same_as_chapter": "chapter-2",
+              "same_as_mission": "Optional – Twist Wrist, Smash, Grab (Join Billy on a Job) (Billy Quest 2)"
+            },
+            {
+              "label": "Mall Rats (Join Billy on a Job)",
+              "same_as_chapter": "chapter-3",
+              "same_as_mission": "Optional – Mall Rats (Join Billy on a Job) (*SOLO ONLY*) (Billy Quest 3)"
+            },
+            {
+              "label": "The Impaler (Steal the Impaler)"
+            },
+            {
+              "label": "Hometown Heroes (Join Billy on a Job) – The Lone Rider"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "snf-chapter-3",
+      "title": "Strangers & Freaks — Chapter 3",
+      "questlines": [
+        {
+          "id": "yago",
+          "title": "Yago",
+          "missions": [
+            {
+              "label": "Join a Street Race",
+              "same_as_chapter": "chapter-3",
+              "same_as_mission": "Optional – Join a Street Race (Yago Quest 1)"
+            },
+            {
+              "label": "Bumper to Bumper (Mentor Yago) (*JASON ONLY*)",
+              "same_as_chapter": "chapter-3",
+              "same_as_mission": "Optional – Bumper to Bumper (Mentor Yago) (*JASON ONLY*) (Yago Quest 2)"
+            },
+            {
+              "label": "Race Against Yago (Time-Sensitive, Missable)",
+              "same_as_chapter": "chapter-3",
+              "same_as_mission": "Optional – Race Against Yago (Yago Quest 3) (Time-Sensitive, Missable)"
+            },
+            {
+              "label": "Brother to Brother (Back Up Yago) (*JASON ONLY*)",
+              "same_as_chapter": "chapter-3",
+              "same_as_mission": "Optional – Brother To Brother (Back up Yago) (Yago Questline End)"
+            }
+          ]
+        },
+        {
+          "id": "andy",
+          "title": "Andy",
+          "missions": [
+            {
+              "label": "Climbing the Cellerichain (Part 1-3) (*LUCIA ONLY*)"
+            },
+            {
+              "label": "Pay the Cellerica Fee (*LUCIA ONLY*)"
+            },
+            {
+              "label": "Peach! (Join the Cellerica Initiation) (*LUCIA ONLY*)"
+            },
+            {
+              "label": "Read the Label (Retrieve the Cellerica Van) (*LUCIA ONLY*)"
+            },
+            {
+              "label": "Puff Puff Pass (Meet at the Warehouse) (*LUCIA ONLY*) – Road to Rehabilitation"
+            }
+          ]
+        },
+        {
+          "id": "yasmani",
+          "title": "Yasmani",
+          "missions": [
+            {
+              "label": "Yasmani's Jewelry Jobs",
+              "same_as_chapter": "chapter-3",
+              "same_as_mission": "Yasmani's Jewelry Jobs (Hit Richardson Jewelry, Hit Donovan Banks & Co, Hit Casa de Empeno, Sell Jewelry to Yasmani)"
+            },
+            {
+              "label": "Yasmani's ATM Jobs"
+            },
+            {
+              "label": "Yasmani's Payday Loans Jobs"
+            },
+            {
+              "label": "Tail the Security Van"
+            }
+          ]
+        },
+        {
+          "id": "randy",
+          "title": "Randy",
+          "missions": [
+            {
+              "label": "Randy's Wish List – Supply & Demand"
+            }
+          ]
+        },
+        {
+          "id": "tyrone",
+          "title": "Tyrone",
+          "missions": [
+            {
+              "label": "Take Out Kitty Litter (Kitty Litter Labs)"
+            },
+            {
+              "label": "Spin On This (Shut Down the Labs) – Spin On This!"
+            }
+          ]
+        },
+        {
+          "id": "dunk",
+          "title": "Dunk",
+          "missions": [
+            {
+              "label": "Dunk's Robbery Tips"
+            }
+          ]
+        },
+        {
+          "id": "papa-audacity",
+          "title": "Papa Audacity (Unknown Stuntman)",
+          "missions": [
+            {
+              "label": "The Unknown Stuntman"
+            },
+            {
+              "label": "Trial by Tire (Meet the AudaCity Engineer)"
+            },
+            {
+              "label": "Quit Your Job, Sell Your House (Help Papa Audacity)"
+            },
+            {
+              "label": "AudaCity Stunts"
+            },
+            {
+              "label": "Catching a Whale (Help Papa Audacity)"
+            },
+            {
+              "label": "The Audacity (Attend the Launch Party)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "snf-chapter-4",
+      "title": "Strangers & Freaks — Chapter 4",
+      "questlines": [
+        {
+          "id": "eddie-acosta",
+          "title": "Eddie Acosta",
+          "missions": [
+            {
+              "label": "Attend Eddie Acosta's Party",
+              "same_as_chapter": "chapter-4",
+              "same_as_mission": "Optional – Attend Eddie Acosta's Party (*SOLO ONLY*) (Eddie Acosta Quest)"
+            }
+          ]
+        },
+        {
+          "id": "pilot-pete",
+          "title": "Pilot Pete",
+          "missions": [
+            {
+              "label": "The Last Mile: Passing the Torch (Recover Pete's Plane) (*JASON ONLY*)"
+            },
+            {
+              "label": "The Last Mile: Backseat Pilot (Deliver Packages) (*JASON ONLY*)"
+            },
+            {
+              "label": "Pete's Deliveries: Southpoint Airfield (*JASON ONLY*)"
+            },
+            {
+              "label": "Pete's Deliveries: Avery Allen & Co. (*JASON ONLY*)"
+            },
+            {
+              "label": "Deliver Packages (*JASON ONLY*)"
+            }
+          ]
+        },
+        {
+          "id": "shayna",
+          "title": "Shayna",
+          "missions": [
+            {
+              "label": "This is a Free Call From… (Pick up Shayna) (*LUCIA ONLY*, Time-Sensitive, Missable)",
+              "same_as_chapter": "chapter-4",
+              "same_as_mission": "Optional – This is a Free Call From… (Pick up Shayna) (*LUCIA ONLY*, Time-Sensitive, Missable)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "snf-any-chapter",
+      "title": "Strangers & Freaks — Any Chapter",
+      "questlines": [
+        {
+          "id": "dr-merle",
+          "title": "Dr. Merle (No Flushers)",
+          "missions": [
+            {
+              "label": "The Final Flush (Meet at Frank's Waffles)"
+            }
+          ]
+        },
+        {
+          "id": "freddie",
+          "title": "Freddie",
+          "missions": [
+            {
+              "label": "Retest Freddie's Defenses"
+            }
+          ]
+        },
+        {
+          "id": "dodos-rising",
+          "title": "Dodos Rising (Protesters)",
+          "missions": []
+        }
+      ]
+    }
+  ]
+}
