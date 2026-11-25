@@ -9,6 +9,7 @@
 ## GitHub Action
 - Workflow: `.github/workflows/publish-trending.yml`
 - Schedule: **every 5 minutes** (`0,5,10…55` UTC) + `workflow_dispatch` + `repository_dispatch` (`publish-trending`)
+- For **~1 minute** pulls (trending + news): see [TRIGGER_EVERY_MINUTE.md](TRIGGER_EVERY_MINUTE.md)
 - GitHub may skip some scheduled ticks under load; green runs mean sync worked when fired.
 - Requires secret: `OPENAI_API_KEY` (optional; without it, template copy is used)
 

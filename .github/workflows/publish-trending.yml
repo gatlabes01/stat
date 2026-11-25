@@ -27,7 +27,8 @@ concurrency:
 
   group: publish-trending
 
-  cancel-in-progress: false
+  # When triggered every minute, drop stale queued runs; keep latest Trends pull.
+  cancel-in-progress: true
 
 
 
