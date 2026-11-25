@@ -5,8 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from app.config import SETTINGS
-from app.config import SETTINGS
-from app.seo_ping import ping_sitemap, submit_indexnow
+from app.seo_ping import ensure_indexnow_key_file, ping_sitemap, submit_indexnow
 from app.trending_export import _abs_url, trending_root_dir
 
 
@@ -32,10 +31,9 @@ def publish_trending_to_github(
         p = root / name
         if p.exists():
             rel_paths.append(name)
-    if SETTINGS.indexnow_key:
-        key_file = root / f"{SETTINGS.indexnow_key}.txt"
-        if key_file.exists():
-            rel_paths.append(key_file.name)
+    key_file = ensure_indexnow_key_file(root, SETTINGS.indexnow_key)
+    if key_file and key_file.exists():
+        rel_paths.append(key_file.name)
 
     commit_msg = message or f"Publish trending {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}"
 

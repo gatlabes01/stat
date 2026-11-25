@@ -98,11 +98,23 @@ def sync_tmz() -> dict:
     published = conn.execute(
         "SELECT COUNT(*) AS n FROM stories WHERE status = 'published'"
     ).fetchone()["n"]
+    new_slugs: list[str] = []
+    if new_ids:
+        placeholders = ",".join("?" * len(new_ids))
+        rows = conn.execute(
+            f"""
+            SELECT slug FROM stories
+            WHERE id IN ({placeholders}) AND status = 'published' AND slug IS NOT NULL
+            """,
+            new_ids,
+        ).fetchall()
+        new_slugs = [str(r["slug"]) for r in rows if r["slug"]]
     conn.close()
 
     return {
         "fetched": len(stories),
         "new_stories": len(new_ids),
+        "new_slugs": new_slugs,
         "total_in_db": total,
         "published": published,
         "enriched_this_run": enrich_stats["enriched"],

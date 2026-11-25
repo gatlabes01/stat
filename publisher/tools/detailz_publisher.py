@@ -83,7 +83,17 @@ def run_once(*, deploy: str) -> None:
         export_result["export_dir"],
     )
 
-    _deploy(deploy)
+    if deploy == "github":
+        log.info("Pushing site/ to GitHub...")
+        pub = publish_to_github(new_slugs=sync_result.get("new_slugs") or [])
+        if pub.get("pushed"):
+            log.info("Pushed to %s/%s", pub["remote"], pub["branch"])
+            log.info("Sitemap ping: %s", pub.get("sitemap_ping"))
+            log.info("IndexNow: %s", pub.get("indexnow"))
+        else:
+            log.info("Nothing to push (%s)", pub.get("reason"))
+    elif deploy != "none":
+        _deploy(deploy)
 
 
 def main() -> int:

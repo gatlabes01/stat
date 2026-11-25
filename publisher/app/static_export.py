@@ -13,6 +13,7 @@ from app import database as db
 from app.config import SETTINGS
 from app.paths import project_root
 from app.format_dates import format_story_date, to_iso8601
+from app.seo_ping import ensure_indexnow_key_file
 from app.sync import COPYRIGHT_NOTICE
 
 TEMPLATES = project_root() / "templates"
@@ -216,6 +217,9 @@ def export_static_site(export_dir: Path | None = None) -> dict:
             if target.exists():
                 shutil.rmtree(target)
             shutil.copytree(slug_dir, target)
+
+    repo_root = export_root()
+    ensure_indexnow_key_file(repo_root, SETTINGS.indexnow_key)
 
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     (news_out / "publish-meta.json").write_text(

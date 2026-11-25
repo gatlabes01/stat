@@ -4,8 +4,19 @@ import json
 import logging
 import urllib.parse
 import urllib.request
+from pathlib import Path
 
 log = logging.getLogger(__name__)
+
+
+def ensure_indexnow_key_file(repo_root: Path, key: str | None) -> Path | None:
+    """Write IndexNow verification file at repo root (served as /{key}.txt)."""
+    if not key:
+        return None
+    key_path = repo_root / f"{key}.txt"
+    if not key_path.exists() or key_path.read_text(encoding="utf-8").strip() != key:
+        key_path.write_text(key + "\n", encoding="utf-8")
+    return key_path
 
 
 def ping_sitemap(sitemap_url: str) -> dict:

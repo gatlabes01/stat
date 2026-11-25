@@ -51,6 +51,7 @@ def run_once(*, deploy: str) -> None:
         if pub.get("pushed"):
             log.info("Pushed: %s", pub.get("commit_message"))
             log.info("Sitemap ping: %s", pub.get("sitemap_ping"))
+            log.info("IndexNow: %s", pub.get("indexnow"))
         else:
             log.info("No git push: %s", pub.get("reason"))
     elif deploy != "none":

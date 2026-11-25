@@ -12,6 +12,7 @@ from app.config import SETTINGS
 from app.paths import project_root
 from app.format_dates import format_story_date, to_iso8601
 from app import trending_db as tdb
+from app.seo_ping import ensure_indexnow_key_file
 from app.sync import COPYRIGHT_NOTICE
 from app.trending_enrich import _faq_fallback, _faq_to_schema, refresh_topic_body
 from app.trending_titles import apply_polished_titles
@@ -232,10 +233,7 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
         encoding="utf-8",
     )
 
-    if SETTINGS.indexnow_key:
-        key_path = repo_root / f"{SETTINGS.indexnow_key}.txt"
-        if not key_path.exists() or key_path.read_text(encoding="utf-8").strip() != SETTINGS.indexnow_key:
-            key_path.write_text(SETTINGS.indexnow_key + "\n", encoding="utf-8")
+    ensure_indexnow_key_file(repo_root, SETTINGS.indexnow_key)
 
     media_src = project_root() / "data" / "trending_media"
     media_dest = trend_out / "media"
