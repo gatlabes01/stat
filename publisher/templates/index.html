@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ site_name }} — Celebrity News</title>
+  <meta name="description" content="{{ site_tagline }}">
+  <link rel="canonical" href="{{ site_url }}/">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="tmz-home">
+  <header class="tmz-bar">
+    <div class="wrap tmz-bar-inner">
+      <a class="tmz-logo" href="/">{{ site_name }}</a>
+      <span class="tmz-kicker">Breaking Celebrity News</span>
+    </div>
+  </header>
+
+  <main class="wrap tmz-home-main">
+    <p class="tmz-meta">{{ total }} stories &middot; page {{ page }} of {{ pages }}</p>
+    <ul class="tmz-feed">
+      {% for s in stories %}
+      <li class="tmz-card">
+        {% if s["image_url"] %}
+        <a class="tmz-thumb" href="/article/{{ s['slug'] }}">
+          <img src="{{ s['image_url'] }}" alt="{{ s['image_alt'] or s['seo_title'] }}" loading="lazy">
+        </a>
+        {% endif %}
+        <div class="tmz-card-copy">
+          <time datetime="{{ s['published_at'] or '' }}">{{ s['published_at'] or '' }}</time>
+          <h2><a href="/article/{{ s['slug'] }}">{{ s['seo_title'] or s['title'] }}</a></h2>
+          {% if s['meta_description'] %}
+          <p>{{ s['meta_description'] }}</p>
+          {% endif %}
+        </div>
+      </li>
+      {% else %}
+      <li class="tmz-empty">Publishing photo stories with rewritten copy&hellip;</li>
+      {% endfor %}
+    </ul>
+
+    <nav class="tmz-pager">
+      {% if page > 1 %}<a href="/?page={{ page - 1 }}">Previous</a>{% endif %}
+      {% if page < pages %}<a href="/?page={{ page + 1 }}">Next</a>{% endif %}
+    </nav>
+  </main>
+
+  <footer class="tmz-footer">
+    <div class="wrap"><p>{{ copyright_notice }}</p></div>
+  </footer>
+</body>
+</html>

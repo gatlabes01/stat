@@ -1,0 +1,55 @@
+name: Publish TMZ news
+
+on:
+  schedule:
+    - cron: "0 */2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-news
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: publisher/requirements.txt
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            publisher/data/stories.db
+            publisher/data/media
+          key: detailz-publisher-${{ hashFiles('publisher/data/stories.db') }}
+          restore-keys: |
+            detailz-publisher-
+
+      - name: Install dependencies
+        run: pip install -r publisher/requirements.txt
+
+      - name: Sync, export, and push news
+        env:
+          SITE_URL: https://detailz.xyz
+          NEWS_BASE_PATH: /news
+          SITE_BASE_PATH: ""
+          DEPLOY_TARGET: github
+          REPO_ROOT: ${{ github.workspace }}
+          EXPORT_DIR: ${{ github.workspace }}
+          GIT_REMOTE: origin
+          GIT_BRANCH: main
+          PUSH_INTERVAL_HOURS: "2"
+          ENRICH_BATCH_SIZE: "12"
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python publisher/tools/detailz_publisher.py --deploy github

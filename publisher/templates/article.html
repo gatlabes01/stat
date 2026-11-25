@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ story["seo_title"] or story["title"] }}</title>
+  <meta name="description" content="{{ story['meta_description'] or '' }}">
+  {% if story['keywords'] %}
+  <meta name="keywords" content="{{ story['keywords'] }}">
+  {% endif %}
+  <link rel="canonical" href="{{ canonical }}">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="{{ site_name }}">
+  <meta property="og:title" content="{{ story['seo_title'] or story['title'] }}">
+  <meta property="og:description" content="{{ story['meta_description'] or '' }}">
+  <meta property="og:url" content="{{ canonical }}">
+  {% if story['image_url'] %}
+  <meta property="og:image" content="{{ story['image_url'] }}">
+  {% endif %}
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/static/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "headline": {{ (story['seo_title'] or story['title'])|tojson }},
+    "description": {{ (story['meta_description'] or '')|tojson }},
+    "datePublished": {{ (story['published_at'] or '')|tojson }},
+    "image": {{ (story['image_url'] or '')|tojson }},
+    "author": {"@type": "Organization", "name": {{ site_name|tojson }}},
+    "publisher": {"@type": "Organization", "name": {{ site_name|tojson }}}
+  }
+  </script>
+</head>
+<body class="tmz-article-page">
+  <header class="tmz-bar">
+    <div class="wrap tmz-bar-inner">
+      <a class="tmz-logo" href="/">{{ site_name }}</a>
+      <span class="tmz-kicker">Celebrity News</span>
+    </div>
+  </header>
+
+  <article class="tmz-article">
+    <div class="tmz-break" aria-hidden="true"></div>
+    <div class="wrap">
+      <p class="tmz-timestamp">
+        <time datetime="{{ story['published_at'] or '' }}">{{ story['published_at'] or '' }}</time>
+        {% if story['author'] %}<span class="tmz-byline">{{ story['author'] }}</span>{% endif %}
+      </p>
+      <h1 class="tmz-headline">{{ story["seo_title"] or story["title"] }}</h1>
+      <div class="tmz-body">
+        {{ story['article_body']|safe }}
+      </div>
+      <p class="tmz-source">
+        Source:
+        <a href="{{ story['link'] }}" target="_blank" rel="noopener noreferrer nofollow">original report</a>
+      </p>
+    </div>
+  </article>
+
+  <footer class="tmz-footer">
+    <div class="wrap">
+      <p>{{ copyright_notice }}</p>
+    </div>
+  </footer>
+</body>
+</html>

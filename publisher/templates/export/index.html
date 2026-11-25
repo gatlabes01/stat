@@ -1,0 +1,38 @@
+{% from "export/_voice_shell.html" import voice_head, voice_footer %}
+{{ voice_head(site_name ~ ' News', site_tagline, abs_url('/'), '') }}
+<div id="mks-breadcrumbs" class="container mks-bredcrumbs-container">
+  <p id="breadcrumbs"><span><span><a href="/">Home</a></span> » <span class="breadcrumb_last">News</span></span></p>
+</div>
+<div id="content" class="container site-content vce-sid-right">
+  <div id="primary" class="vce-main-content">
+    <div class="main-box">
+      <div class="main-box-head vce-border-top">
+        <h1 class="main-box-title">Latest Celebrity News</h1>
+      </div>
+      <div class="main-box-inside">
+        <div class="vce-loop-wrap">
+          {% for s in stories %}
+          <article class="vce-post vce-lay-b hentry">
+            {% if s['image_url'] %}
+            <div class="meta-image">
+              <a href="{{ url_for('/article/' + s['slug'] + '/') }}" title="{{ s['seo_title'] or s['title'] }}">
+                <img width="375" height="195" src="{{ s['image_url'] }}" alt="{{ s['image_alt'] or s['seo_title'] }}" loading="lazy" class="attachment-vce-lay-b size-vce-lay-b wp-post-image">
+              </a>
+            </div>
+            {% endif %}
+            <header class="entry-header">
+              <h2 class="entry-title">
+                <a href="{{ url_for('/article/' + s['slug'] + '/') }}" title="{{ s['seo_title'] or s['title'] }}">{{ s['seo_title'] or s['title'] }}</a>
+              </h2>
+              {% if s['published_label'] %}
+              <div class="entry-meta"><div class="meta-item date"><span class="updated">{{ s['published_label'] }}</span></div></div>
+              {% endif %}
+            </header>
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ voice_footer() }}
