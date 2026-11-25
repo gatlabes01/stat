@@ -295,8 +295,6 @@ def hub_body(chapters_html: str, snf_html: str, mission_count: int, snf_count: i
           <p>Side missions and questlines — many count toward 100% completion or trophies. Some tie to the main story under a different name; those links point to the same mission guide as the story list.</p>
 {ad_unit()}
           {snf_html}
-          <h2>About these guides</h2>
-          <p>Detailz publishes original gaming guides in the same Voice layout as our news section, with clear titles and metadata so Google and players can find each mission. We do not republish third-party walkthrough text; each page is our own index and expandable guide for Rockstar&apos;s GTA 6 campaign.</p>
         </div>
 {ad_unit()}
       </article>"""
