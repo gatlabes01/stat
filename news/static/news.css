@@ -1,0 +1,65 @@
+/* Detailz news — matches Voice theme spacing */
+#news .vce-loop-wrap,
+.news-section .vce-loop-wrap {
+  display: block;
+}
+
+.vce-main-content .entry-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.vce-main-content .entry-content p {
+  font-size: 1.6rem;
+  line-height: 1.7;
+  margin: 0 0 1.25rem;
+  color: #444;
+}
+
+.vce-main-content .entry-content figure.wp-block-image {
+  margin: 1.5rem 0;
+}
+
+.vce-main-content .entry-content figure.wp-block-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.vce-single .entry-headline p {
+  font-size: 1.8rem;
+  line-height: 1.5;
+  color: #555;
+  margin: 0 auto 1.5rem;
+  max-width: 600px;
+}
+
+.vce-lay-b .entry-title a {
+  font-size: 2.4rem;
+  line-height: 1.3;
+}
+
+/* Legacy article markup already stored in DB */
+.vce-main-content .entry-content p.article-p {
+  font-size: 1.6rem;
+  line-height: 1.7;
+  margin: 0 0 1.25rem;
+  color: #444;
+}
+
+.vce-main-content .entry-content figure.article-photo {
+  margin: 1.5rem 0;
+}
+
+.vce-main-content .entry-content figure.article-photo img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.vce-main-content .entry-content .photo-credit,
+.vce-main-content .entry-content .wp-caption-text {
+  font-size: 1.2rem;
+  color: #888;
+  margin-top: 0.5rem;
+}
