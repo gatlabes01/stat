@@ -10,83 +10,54 @@ import httpx
 
 from app.config import SETTINGS
 from app.trending_rss import TrendItem
+from app.trending_titles import apply_polished_titles, smart_display
 
 logger = logging.getLogger(__name__)
 
-TRENDING_SYSTEM = """You write short trending-search explainers for Detailz readers.
-Rules:
-- The primary keyword MUST appear in seo_title and meta_description naturally.
-- seo_title: 50-65 chars, include the exact trending keyword phrase, engaging for Google.
-- meta_description: 140-160 chars, include the keyword, summarize why people search it.
-- paragraphs: 4-6 factual paragraphs using ONLY facts from the provided news headlines/links context.
-- Do not invent statistics, quotes, or events not implied by the sources.
-- End with a neutral "what to watch next" line — no hype.
-Return JSON: seo_title, h1 (must contain exact keyword), meta_description, paragraphs (array),
-keywords (5-8 phrases), faq (array of {q, a} with 2-3 items; questions must include the keyword where natural).
+TRENDING_SYSTEM = """You write trending explainers for Detailz like a sharp entertainment/news editor (TMZ-adjacent tone: clear, conversational, not robotic).
+Voice: second person sparingly, short sentences, no "spiking on Google" boilerplate, no "Why X Is Trending Now".
+seo_title/h1/meta are rewritten on publish — focus on great paragraphs + faq.
+- paragraphs: 4-6 vivid but factual graphs using ONLY the bundled headlines. Lead with what happened, then why searchers care.
+- Do not invent quotes, stats, or events.
+Return JSON: paragraphs, keywords (5-8), faq (2-3 items with q/a in plain English).
 """
 
 
-def _seo_title_fallback(keyword: str, traffic: str) -> str:
-    kw = keyword.strip().title()
-    extra = f" — Why {kw} Is Trending Now"
-    if len(kw) + len(extra) > 65:
-        return f"{kw} Trending: What to Know Today | Detailz"[:65]
-    return f"{kw}{extra} | Detailz"
-
-
-def _meta_fallback(keyword: str, traffic: str, news_titles: list[str]) -> str:
-    kw = keyword
-    hint = news_titles[0][:80] if news_titles else "breaking search interest"
-    base = f"{kw} is spiking on Google ({traffic or 'high'} searches). {hint}"
-    return re.sub(r"\s+", " ", base)[:160]
-
-
 def _fallback_paragraphs(item: TrendItem) -> list[str]:
-    kw = item.keyword
+    name = smart_display(item.keyword)
     paras = [
-        f"Search interest for «{kw}» jumped today on Google Trends "
-        f"({item.approx_traffic or 'rising'} queries in the United States). "
-        f"Detailz breaks down why readers are searching and what news is driving it.",
+        f"If you typed “{name}” into Google today, you're not alone — "
+        f"the phrase is all over Trends ({item.approx_traffic or 'rising'} U.S. interest).",
     ]
     if item.news:
+        lead = item.news[0]
         paras.append(
-            f"Coverage points to several developing angles. "
-            f"Lead headline: «{item.news[0].title}»"
-            + (f" ({item.news[0].source})." if item.news[0].source else ".")
+            f"The clearest trigger looks like this headline: “{lead.title}”"
+            + (f" ({lead.source})." if lead.source else ".")
         )
         for n in item.news[1:3]:
-            paras.append(
-                f"Related reporting: «{n.title}»"
-                + (f" via {n.source}." if n.source else ".")
-            )
+            paras.append(f"Also in the mix: “{n.title}”" + (f" from {n.source}." if n.source else "."))
     else:
-        paras.append(
-            f"Few major headlines were bundled with this trend yet; "
-            f"check back as publishers file more stories on {kw}."
-        )
+        paras.append("No single headline is attached yet — the spike may be pure curiosity or early news still landing.")
     paras.append(
-        f"If you searched for {kw}, bookmark this page for context and links to "
-        f"the latest updates as the trend evolves."
+        f"Below is a quick, readable breakdown of what searchers usually want when {name} trends, "
+        f"plus answers to common questions."
     )
     return paras
 
 
-def _h1_fallback(keyword: str) -> str:
-    return f"{keyword.strip().title()}: Why It's Trending on Google Today"
-
-
 def _faq_fallback(keyword: str, traffic: str) -> list[dict[str, str]]:
-    kw = keyword
+    name = smart_display(keyword)
     return [
         {
-            "q": f"Why is «{kw}» trending on Google?",
-            "a": f"Search volume for «{kw}» rose sharply on Google Trends ({traffic or 'high interest'} in the U.S.), "
-            f"usually tied to breaking news or viral moments in the bundled headlines.",
+            "q": f"Why is {name} trending?",
+            "a": f"Google Trends shows a sharp jump in U.S. searches for “{name}” ({traffic or 'rising'}), "
+            f"usually tied to the news stories bundled with this spike.",
         },
         {
-            "q": f"What are people searching for with «{kw}»?",
-            "a": f"Readers typically want context on the latest news, timelines, and explainers around «{kw}» "
-            f"while the trend is active.",
+            "q": f"What do people want to know about {name}?",
+            "a": f"Mostly the latest headlines, quick context, and whether something bigger is coming — "
+            f"not long-winded trend jargon.",
         },
     ]
 
@@ -162,34 +133,18 @@ def build_article(
     if SETTINGS.openai_api_key:
         try:
             data = _call_llm(item)
-            title = (data.get("seo_title") or "").strip()
-            if item.keyword.lower() not in title.lower():
-                title = _seo_title_fallback(item.keyword, item.approx_traffic)
-            desc = (data.get("meta_description") or "").strip()
-            if item.keyword.lower() not in desc.lower():
-                desc = _meta_fallback(item.keyword, item.approx_traffic, news_titles)
             paragraphs = data.get("paragraphs") or _fallback_paragraphs(item)
-            h1 = (data.get("h1") or "").strip() or _h1_fallback(item.keyword)
             faq = data.get("faq") or _faq_fallback(item.keyword, item.approx_traffic)
             kw_list = data.get("keywords") or []
         except Exception as exc:
             logger.warning("LLM trending enrich failed: %s", exc)
-            title = _seo_title_fallback(item.keyword, item.approx_traffic)
-            desc = _meta_fallback(item.keyword, item.approx_traffic, news_titles)
             paragraphs = _fallback_paragraphs(item)
-            h1 = _h1_fallback(item.keyword)
             faq = _faq_fallback(item.keyword, item.approx_traffic)
             kw_list = [item.keyword, f"{item.keyword} trending", "google trends"]
     else:
-        title = _seo_title_fallback(item.keyword, item.approx_traffic)
-        desc = _meta_fallback(item.keyword, item.approx_traffic, news_titles)
         paragraphs = _fallback_paragraphs(item)
-        h1 = _h1_fallback(item.keyword)
         faq = _faq_fallback(item.keyword, item.approx_traffic)
         kw_list = [item.keyword, f"{item.keyword} trending", "google trends"]
-
-    if item.keyword.lower() not in h1.lower():
-        h1 = _h1_fallback(item.keyword)
 
     body_html = _paragraphs_to_html(paragraphs, image_url, item.keyword)
     body_html += _faq_to_html(faq)
@@ -205,12 +160,15 @@ def build_article(
 
     seo_keywords = ", ".join(dict.fromkeys([item.keyword, *[str(k) for k in kw_list if k]]))[:500]
 
-    return {
-        "seo_title": title,
-        "h1": h1,
-        "meta_description": desc,
+    out = {
+        "seo_title": "",
+        "h1": "",
+        "meta_description": "",
         "article_body": body_html,
         "source_links": json.dumps(sources, ensure_ascii=False),
         "faq_json": json.dumps(faq, ensure_ascii=False),
         "seo_keywords": seo_keywords,
+        "keyword": item.keyword,
+        "approx_traffic": item.approx_traffic,
     }
+    return apply_polished_titles(out)

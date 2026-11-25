@@ -16,7 +16,7 @@
 <link rel="alternate" type="application/rss+xml" title="{{ site_name }} Trending" href="{{ abs_url('/feed.xml') }}">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans%3A400%7CRoboto+Slab%3A400%2C300&amp;display=swap">
 <link rel="stylesheet" href="/wp-content/themes/voice/assets/css/min.css?ver=2.9.9">
-<link rel="stylesheet" href="{{ url_for('/static/news.css') }}">
+<link rel="stylesheet" href="/news/static/news.css">
 {{ seo }}
 {{ adsense_head() }}
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-FYM5BSJPNZ"></script>
@@ -56,8 +56,8 @@
       <div class="vce-loop-wrap">
       {% for t in topics %}
         <article class="vce-lay-b post">
-          <h2 class="entry-title"><a href="{{ url_for('/' ~ t.slug ~ '/') }}">{{ t.seo_title or t.keyword }}</a></h2>
-          <p>{{ t.meta_description_short or t.meta_description }}</p>
+          <h2 class="entry-title"><a href="{{ url_for('/' ~ t.slug ~ '/') }}">{{ t.display_title or t.h1 or t.keyword }}</a></h2>
+          <p class="trending-deck">{{ t.meta_description_short or t.meta_description }}</p>
           <p class="entry-meta">{{ t.approx_traffic or 'Trending' }} · {{ t.published_label }}</p>
         </article>
         {% if loop.index is divisibleby 4 %}{{ adsense_unit() }}{% endif %}

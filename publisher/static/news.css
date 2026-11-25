@@ -63,3 +63,23 @@
   color: #888;
   margin-top: 0.5rem;
 }
+
+.category-trending .vce-loop-wrap .vce-lay-b {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+.category-trending .vce-lay-b .entry-title a {
+  color: #222;
+  text-decoration: none;
+  font-weight: 700;
+}
+.category-trending .vce-lay-b .entry-title a:hover {
+  color: #cf4d35;
+}
+.category-trending .trending-deck {
+  font-size: 1.5rem;
+  line-height: 1.55;
+  color: #555;
+  margin: 0.5rem 0;
+}

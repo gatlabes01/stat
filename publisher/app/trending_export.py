@@ -12,7 +12,8 @@ from app.config import SETTINGS
 from app.paths import project_root
 from app.format_dates import format_story_date, to_iso8601
 from app import trending_db as tdb
-from app.trending_enrich import _faq_fallback, _faq_to_schema, _h1_fallback
+from app.trending_enrich import _faq_fallback, _faq_to_schema
+from app.trending_titles import apply_polished_titles
 def export_root() -> Path:
     import os
 
@@ -137,8 +138,7 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
             topic["image_url_abs"] = ""
         topic["published_label"] = format_story_date(topic.get("published_at"))
         topic["published_iso"] = to_iso8601(topic.get("published_at"))
-        topic["meta_description_short"] = (topic.get("meta_description") or "")[:300]
-        topic["h1"] = topic.get("h1") or _h1_fallback(topic["keyword"])
+        apply_polished_titles(topic)
         try:
             faq_raw = json.loads(topic.get("faq_json") or "[]")
         except json.JSONDecodeError:
@@ -192,7 +192,7 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
             "@type": "ListItem",
             "position": i + 1,
             "url": _abs_url(f"/{t['slug']}/"),
-            "name": t.get("seo_title") or t["keyword"],
+            "name": t.get("display_title") or t.get("h1") or t["keyword"],
         }
         for i, t in enumerate(stories_for_index[:50])
     ]
