@@ -58,6 +58,58 @@ def _migrate(conn: sqlite3.Connection) -> None:
         if name not in cols:
             conn.execute(ddl)
     conn.commit()
+    _migrate_allow_multi_per_keyword(conn)
+
+
+def _table_sql(conn: sqlite3.Connection) -> str:
+    row = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table' AND name='trending_topics'"
+    ).fetchone()
+    return row[0] if row else ""
+
+
+def _migrate_allow_multi_per_keyword(conn: sqlite3.Connection) -> None:
+    """Allow up to N articles per keyword (drop UNIQUE on keyword_normalized)."""
+    sql = _table_sql(conn)
+    if not sql or "keyword_normalized TEXT NOT NULL UNIQUE" not in sql.replace("\n", " "):
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_trending_norm ON trending_topics(keyword_normalized)"
+        )
+        conn.commit()
+        return
+    cols = [r[1] for r in conn.execute("PRAGMA table_info(trending_topics)")]
+    col_list = ", ".join(cols)
+    conn.executescript(
+        f"""
+        CREATE TABLE trending_topics_mig (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            keyword TEXT NOT NULL,
+            keyword_normalized TEXT NOT NULL,
+            slug TEXT NOT NULL UNIQUE,
+            approx_traffic TEXT,
+            traffic_score INTEGER DEFAULT 0,
+            seo_title TEXT,
+            meta_description TEXT,
+            article_body TEXT,
+            image_url TEXT,
+            source_links TEXT,
+            status TEXT NOT NULL DEFAULT 'published',
+            published_at TEXT,
+            created_at TEXT NOT NULL,
+            trend_pub_date TEXT,
+            h1 TEXT,
+            faq_json TEXT,
+            seo_keywords TEXT
+        );
+        INSERT INTO trending_topics_mig ({col_list})
+        SELECT {col_list} FROM trending_topics;
+        DROP TABLE trending_topics;
+        ALTER TABLE trending_topics_mig RENAME TO trending_topics;
+        CREATE INDEX IF NOT EXISTS idx_trending_published ON trending_topics(published_at DESC);
+        CREATE INDEX IF NOT EXISTS idx_trending_norm ON trending_topics(keyword_normalized);
+        """
+    )
+    conn.commit()
 
 
 def normalize_keyword(keyword: str) -> str:
@@ -77,11 +129,12 @@ def unique_trending_slug(conn: sqlite3.Connection, keyword: str) -> str:
     return candidate
 
 
-def get_by_normalized(conn: sqlite3.Connection, keyword_normalized: str):
-    return conn.execute(
-        "SELECT * FROM trending_topics WHERE keyword_normalized = ?",
+def count_by_normalized(conn: sqlite3.Connection, keyword_normalized: str) -> int:
+    row = conn.execute(
+        "SELECT COUNT(*) AS n FROM trending_topics WHERE keyword_normalized = ?",
         (keyword_normalized,),
     ).fetchone()
+    return int(row["n"]) if row else 0
 
 
 def insert_topic(conn: sqlite3.Connection, row: dict) -> int:

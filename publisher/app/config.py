@@ -15,6 +15,7 @@ class Settings:
     trending_geo: str
     trending_max_per_run: int
     trending_min_traffic_score: int
+    trending_max_per_keyword: int
     indexnow_key: str | None
     site_tagline: str
     tmz_rss_url: str
@@ -48,6 +49,7 @@ def load_settings() -> Settings:
         trending_geo=os.environ.get("TRENDING_GEO", "US"),
         trending_max_per_run=int(os.environ.get("TRENDING_MAX_PER_RUN", "5")),
         trending_min_traffic_score=int(os.environ.get("TRENDING_MIN_TRAFFIC_SCORE", "200")),
+        trending_max_per_keyword=int(os.environ.get("TRENDING_MAX_PER_KEYWORD", "3")),
         indexnow_key=os.environ.get("INDEXNOW_KEY") or None,
         site_tagline=os.environ.get(
             "SITE_TAGLINE",
