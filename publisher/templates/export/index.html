@@ -1,5 +1,7 @@
 {% from "export/_voice_shell.html" import voice_head, voice_footer %}
-{{ voice_head(site_name ~ ' News', site_tagline, abs_url('/'), '') }}
+{% from "export/_adsense.html" import adsense_unit %}
+{{ voice_head(site_name ~ ' News', site_tagline, abs_url('/'), '', 'archive category-news') }}
+{{ adsense_unit('vce-ad-below-header vce-ad-container') }}
 <div id="mks-breadcrumbs" class="container mks-bredcrumbs-container">
   <p id="breadcrumbs"><span><span><a href="/">Home</a></span> » <span class="breadcrumb_last">News</span></span></p>
 </div>
@@ -35,4 +37,5 @@
     </div>
   </div>
 </div>
+{{ adsense_unit('vce-ad-above-footer vce-ad-container') }}
 {{ voice_footer() }}

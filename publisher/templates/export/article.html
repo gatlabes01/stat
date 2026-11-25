@@ -1,6 +1,8 @@
 {% from "export/_voice_shell.html" import voice_head, voice_footer %}
+{% from "export/_adsense.html" import adsense_unit %}
 {% set title = story['seo_title'] or story['title'] %}
-{{ voice_head(title, story['meta_description'] or '', canonical, extra_head) }}
+{{ voice_head(title, story['meta_description'] or '', canonical, extra_head, 'wp-singular single single-post vce-single') }}
+{{ adsense_unit('vce-ad-below-header vce-ad-container') }}
 <div id="mks-breadcrumbs" class="container mks-bredcrumbs-container">
   <p id="breadcrumbs"><span><span><a href="/">Home</a></span> » <span><a href="{{ url_for('/') }}">News</a></span> » <span class="breadcrumb_last">{{ title }}</span></span></p>
 </div>
@@ -11,14 +13,18 @@
         <header class="entry-header">
           <h1 class="entry-title">{{ title }}</h1>
         </header>
+        {{ adsense_unit() }}
         {% if story['meta_description'] %}
         <div class="entry-headline"><p>{{ story['meta_description'] }}</p></div>
+        {{ adsense_unit() }}
         {% endif %}
         <div class="entry-content">
           {{ story['article_body']|safe }}
         </div>
+        {{ adsense_unit() }}
       </article>
     </main>
   </div>
 </div>
+{{ adsense_unit('vce-ad-above-footer vce-ad-container') }}
 {{ voice_footer() }}
