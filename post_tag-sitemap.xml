@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="/main-sitemap.xsl"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd http://www.google.com/schemas/sitemap-image/1.1 http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
-		<loc>/tag/donald-trump-immigration/</loc>
+		<loc>https://detailz.xyz/tag/donald-trump-immigration/</loc>
 		<lastmod>2025-09-20T01:46:38+00:00</lastmod>
 	</url>
 	<url>
-		<loc>/tag/download/</loc>
+		<loc>https://detailz.xyz/tag/download/</loc>
 		<lastmod>2026-06-30T05:35:13+00:00</lastmod>
 	</url>
 	<url>
-		<loc>/tag/funny/</loc>
+		<loc>https://detailz.xyz/tag/funny/</loc>
 		<lastmod>2024-01-13T04:47:58+00:00</lastmod>
 	</url>
 	<url>
-		<loc>/tag/john-travolta/</loc>
+		<loc>https://detailz.xyz/tag/john-travolta/</loc>
 		<lastmod>2025-09-20T01:18:15+00:00</lastmod>
 	</url>
 	<url>
-		<loc>/tag/lifestyle/</loc>
+		<loc>https://detailz.xyz/tag/lifestyle/</loc>
 		<lastmod>2025-09-20T01:18:15+00:00</lastmod>
 	</url>
 	<url>
-		<loc>/tag/make-money-online/</loc>
+		<loc>https://detailz.xyz/tag/make-money-online/</loc>
 		<lastmod>2026-09-13T02:32:37+00:00</lastmod>
 	</url>
 	<url>
-		<loc>/tag/project-playtime-mobile/</loc>
+		<loc>https://detailz.xyz/tag/project-playtime-mobile/</loc>
 		<lastmod>2026-06-30T05:35:13+00:00</lastmod>
 	</url>
 </urlset>

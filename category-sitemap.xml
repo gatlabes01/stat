@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="/main-sitemap.xsl"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd http://www.google.com/schemas/sitemap-image/1.1 http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
-		<loc>/category/celebs/</loc>
+		<loc>https://detailz.xyz/category/celebs/</loc>
 		<lastmod>2025-09-20T01:46:38+00:00</lastmod>
 	</url>
 	<url>
-		<loc>/category/entertainment/</loc>
+		<loc>https://detailz.xyz/category/entertainment/</loc>
 		<lastmod>2025-05-12T21:15:54+00:00</lastmod>
 	</url>
 	<url>
-		<loc>/category/home/</loc>
+		<loc>https://detailz.xyz/category/home/</loc>
 		<lastmod>2024-01-30T22:25:46+00:00</lastmod>
 	</url>
 	<url>
-		<loc>/category/uncategorized/</loc>
+		<loc>https://detailz.xyz/category/uncategorized/</loc>
 		<lastmod>2026-09-13T02:32:37+00:00</lastmod>
 	</url>
 </urlset>
