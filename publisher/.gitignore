@@ -4,6 +4,5 @@ __pycache__/
 *.pyc
 site/
 data/stories.db
-data/trending.db
 data/trending_media
 data/media/

@@ -6,6 +6,7 @@ from pathlib import Path
 
 from app.config import SETTINGS
 from app.seo_ping import ensure_indexnow_key_file, ping_sitemap, submit_indexnow
+from app.paths import project_root
 from app.trending_export import _abs_url, trending_root_dir
 
 
@@ -34,6 +35,10 @@ def publish_trending_to_github(
     key_file = ensure_indexnow_key_file(root, SETTINGS.indexnow_key)
     if key_file and key_file.exists():
         rel_paths.append(key_file.name)
+
+    db_path = project_root() / "data" / "trending.db"
+    if db_path.is_file():
+        rel_paths.append(str(db_path.relative_to(root)))
 
     commit_msg = message or f"Publish trending {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}"
 

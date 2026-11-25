@@ -60,17 +60,11 @@ jobs:
 
         with:
 
-          path: |
+          path: publisher/data/trending_media
 
-            publisher/data/trending.db
+          key: detailz-trending-media-${{ runner.os }}
 
-            publisher/data/trending_media
-
-          key: detailz-trending-${{ hashFiles('publisher/data/trending.db') }}
-
-          restore-keys: |
-
-            detailz-trending-
+          restore-keys: detailz-trending-media-
 
 
 

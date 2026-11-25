@@ -60,6 +60,48 @@ def _rewrite_body(html: str) -> str:
     return html
 
 
+_SKIP_TOPIC_DIRS = frozenset({"archive", "media", "static", "articles"})
+
+
+def _title_from_disk_index(index_html: Path) -> str:
+    try:
+        html = index_html.read_text(encoding="utf-8", errors="ignore")
+        m = re.search(r"<title>([^<]+)</title>", html, re.I)
+        if m:
+            return m.group(1).split("|")[0].strip()
+    except OSError:
+        pass
+    return index_html.parent.name.replace("-", " ").title()
+
+
+def _topics_on_disk(trend_out: Path, known_slugs: set[str]) -> list[dict]:
+    """Include existing /trending/{slug}/ pages in hub, feed, and sitemap even if missing from DB."""
+    extras: list[dict] = []
+    for child in trend_out.iterdir():
+        if not child.is_dir() or child.name in _SKIP_TOPIC_DIRS or child.name in known_slugs:
+            continue
+        idx = child / "index.html"
+        if not idx.is_file():
+            continue
+        title = _title_from_disk_index(idx)
+        ts = datetime.fromtimestamp(idx.stat().st_mtime, tz=timezone.utc).strftime(
+            "%Y-%m-%dT%H:%M:%S+00:00"
+        )
+        extras.append(
+            {
+                "slug": child.name,
+                "keyword": child.name.replace("-", " "),
+                "h1": title,
+                "display_title": title,
+                "meta_description": "",
+                "published_at": ts,
+                "published_label": format_story_date(ts),
+                "published_iso": to_iso8601(ts),
+            }
+        )
+    return extras
+
+
 def _ensure_sitemap_index_entry(repo_root: Path, lastmod: str) -> None:
     loc = f"{SETTINGS.site_url.rstrip('/')}/trending/sitemap.xml"
     for name in ("sitemap_index.xml", "sitemap.xml"):
@@ -162,6 +204,13 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
 
         stories_for_index.append(topic)
 
+    known = {t["slug"] for t in stories_for_index}
+    stories_for_index.extend(_topics_on_disk(trend_out, known))
+    stories_for_index.sort(
+        key=lambda t: (t.get("published_at") or t.get("created_at") or ""),
+        reverse=True,
+    )
+
     # Second pass: add related links now that index list is built
     for topic in stories_for_index:
         slug = topic["slug"]
@@ -199,16 +248,16 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
             "url": _abs_url(f"/{t['slug']}/"),
             "name": t.get("display_title") or t.get("h1") or t["keyword"],
         }
-        for i, t in enumerate(stories_for_index[:50])
+        for i, t in enumerate(stories_for_index[:100])
     ]
 
     (trend_out / "index.html").write_text(
-        index_tpl.render(topics=stories_for_index[:96], total=len(stories_for_index), item_list=item_list),
+        index_tpl.render(topics=stories_for_index, total=len(stories_for_index), item_list=item_list),
         encoding="utf-8",
     )
 
     (trend_out / "feed.xml").write_text(
-        feed_tpl.render(topics=stories_for_index[:50]),
+        feed_tpl.render(topics=stories_for_index),
         encoding="utf-8",
     )
 

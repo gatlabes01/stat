@@ -66,7 +66,7 @@
       <nav class="trending-explore" aria-label="Explore trending topics">
         <h2>Explore trending topics</h2>
         <ul class="trending-tag-list trending-tag-list--hub">
-        {% for t in topics[:48] %}
+        {% for t in topics %}
           <li><a href="{{ url_for('/' ~ t.slug ~ '/') }}">{{ t.display_title or t.h1 or t.keyword }}</a></li>
         {% endfor %}
         </ul>
