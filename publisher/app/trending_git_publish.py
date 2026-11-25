@@ -62,6 +62,7 @@ def publish_trending_to_github(
         raise RuntimeError(push.stderr or push.stdout)
 
     ping = ping_sitemap(_abs_url("/sitemap.xml"))
+    ping.update({f"hub_{k}": v for k, v in ping_sitemap(f"{SETTINGS.site_url.rstrip('/')}/sitemap_index.xml").items()})
     indexnow = {"skipped": True}
     if SETTINGS.indexnow_key and new_slugs:
         host = SETTINGS.site_url.replace("https://", "").replace("http://", "").strip("/")

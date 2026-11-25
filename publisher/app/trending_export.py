@@ -115,18 +115,18 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
     archive_root = trend_out / "archive"
     archive_root.mkdir(parents=True, exist_ok=True)
 
-    live_slugs = {dict(r)["slug"] for r in rows}
     tb = SETTINGS.trending_base_path.strip("/")
-    for child in trend_out.iterdir():
-        if not child.is_dir() or child.name in reserved or child.name in live_slugs:
-            continue
-        if child.name not in ("archive", "media", "static"):
-            shutil.rmtree(child, ignore_errors=True)
 
     stories_for_index: list[dict] = []
     for row in rows:
         topic = dict(row)
         topic = refresh_topic_body(topic)
+        try:
+            sources = json.loads(topic.get("source_links") or "[]")
+        except json.JSONDecodeError:
+            sources = []
+        if not any(isinstance(s, dict) and s.get("title") for s in sources):
+            continue
         topic["article_body"] = _rewrite_body(topic.get("article_body") or "")
         slug = topic["slug"]
         dest = trend_out / slug
@@ -169,10 +169,23 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
 
         stories_for_index.append(topic)
 
+    live_slugs = {t["slug"] for t in stories_for_index}
+    if archive_root.exists():
+        stale = [
+            index.parent
+            for index in list(archive_root.rglob("index.html"))
+            if index.parent.name not in live_slugs
+        ]
+        for slug_dir in stale:
+            shutil.rmtree(slug_dir, ignore_errors=True)
+    for child in trend_out.iterdir():
+        if not child.is_dir() or child.name in reserved or child.name in live_slugs:
+            continue
+        if child.name not in ("archive", "media", "static"):
+            shutil.rmtree(child, ignore_errors=True)
+
     # Second pass: add related links now that index list is built
-    slug_map = {t["slug"]: t for t in stories_for_index}
-    for row in rows:
-        topic = slug_map[dict(row)["slug"]]
+    for topic in stories_for_index:
         slug = topic["slug"]
         dest = trend_out / slug
         related = pick_related_topics(topic, stories_for_index, url_for=_url_for, limit=12)
@@ -212,7 +225,7 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
     ]
 
     (trend_out / "index.html").write_text(
-        index_tpl.render(topics=stories_for_index[:96], total=len(rows), item_list=item_list),
+        index_tpl.render(topics=stories_for_index[:96], total=len(stories_for_index), item_list=item_list),
         encoding="utf-8",
     )
 
@@ -228,7 +241,10 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
         f"  <url><loc>{_abs_url('/')}</loc><lastmod>{lastmod}</lastmod>"
         f"<changefreq>hourly</changefreq><priority>1.0</priority></url>",
     ]
-    for slug, published_at in slugs:
+    published_by_slug = {slug: published_at for slug, published_at in slugs}
+    for topic in stories_for_index:
+        slug = topic["slug"]
+        published_at = published_by_slug.get(slug) or topic.get("published_at") or ""
         loc = _abs_url(f"/{slug}/")
         lm = (published_at or lastmod)[:10]
         sitemap_lines.append(
@@ -275,7 +291,7 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
         json.dumps(
             {
                 "generated_at": generated,
-                "article_count": len(rows),
+                "article_count": len(stories_for_index),
                 "site_url": SETTINGS.site_url,
                 "trending_path": SETTINGS.trending_base_path,
             },
@@ -288,7 +304,7 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
 
     return {
         "export_dir": str(trend_out),
-        "articles": len(rows),
+        "articles": len(stories_for_index),
         "generated_at": generated,
         "trending_url": _abs_url("/"),
     }

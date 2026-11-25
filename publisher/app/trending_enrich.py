@@ -10,6 +10,7 @@ import httpx
 
 from app.config import SETTINGS
 from app.trending_rss import TrendItem, TrendNewsItem
+from app.trending_relevance import align_trend_item, filter_source_links_json
 from app.trending_titles import apply_polished_titles, smart_display
 from app.voice import voice_prompt_section
 
@@ -26,11 +27,13 @@ def trending_system_prompt() -> str:
 
 Rules:
 - Detailz voice: skeptical-but-fair, plain English, short leads — not wire-service flat or self-help.
+- The FIRST paragraph must answer the search keyword using only matching headlines.
 - Use ONLY facts from the provided headlines — no invented quotes, scores, dates, or drama.
+- If a headline is about a different story, ignore it.
 - Weave 0–2 signature voice hooks where they fit naturally.
 - Never mention Google, search volume, trending, spiking, AI, briefings, explainers, or "what to watch next".
 - Banned phrases: plain-English, rundown, news cycle, catch up quickly, smart move, traction, puzzle pieces.
-- Use the display keyword exactly 2 or 3 times in paragraphs only (not FAQ).
+- Use the display keyword naturally in paragraphs (at least twice). Do not replace it with filler words.
 - Word count {TARGET_MIN}–{TARGET_MAX} across paragraphs.
 Return JSON:
   paragraphs: array of 5-8 strings (one paragraph each),
@@ -98,10 +101,8 @@ def add_keyword_mentions(paragraphs: list[str], keyword: str, minimum: int = 2) 
 
 
 def enforce_keyword_density(paragraphs: list[str], keyword: str) -> list[str]:
-    paragraphs = trim_keyword_mentions(paragraphs, keyword, maximum=3)
-    paragraphs = add_keyword_mentions(paragraphs, keyword, minimum=2)
-    paragraphs = trim_keyword_mentions(paragraphs, keyword, maximum=3)
-    return paragraphs
+    """Ensure the topic name appears. Never replace it inside quoted headlines."""
+    return add_keyword_mentions(paragraphs, keyword, minimum=2)
 
 
 def _strip_google_jargon(text: str) -> str:
@@ -114,82 +115,46 @@ def _strip_google_jargon(text: str) -> str:
 
 def _fallback_paragraphs(item: TrendItem) -> list[str]:
     name = _keyword_label(item.keyword)
+    item = align_trend_item(item)
     paras: list[str] = []
 
     if item.news:
         lead = item.news[0]
         paras.append(
-            f"{name} drew fresh coverage after this report: "
-            f"“{_strip_google_jargon(lead.title)}.”"
+            f"{name}: {_strip_google_jargon(lead.title).rstrip('.')}."
             + (f" ({lead.source})" if lead.source else "")
         )
-        paras.append(
-            "Follow-up pieces usually hinge on one new detail — a score, a filing, an injury update, "
-            "or a quote from someone involved."
-        )
-        templates = (
-            "{label} also ran: “{t}.”",
-            "From {label}: “{t}.”",
-            "Another report: “{t}.” ({label})",
-        )
-        for i, n in enumerate(item.news[1:4]):
+        for n in item.news[1:5]:
             if not n.title:
                 continue
-            label = n.source or "Elsewhere"
-            t = templates[i % len(templates)].format(
-                t=_strip_google_jargon(n.title), label=label
-            )
-            paras.append(t)
-    else:
-        paras.append(f"Major outlets had not filed a lead story on {name} at publish time.")
+            label = n.source or "Another outlet"
+            paras.append(f"{label}: “{_strip_google_jargon(n.title).rstrip('.')}.”")
         paras.append(
-            "When the first report lands, expect sports, politics, or entertainment desks "
-            "to pick it up depending on the topic."
+            f"Taken together, the reporting on {name} is the headlines above — "
+            "same facts, named sources, no extra claims."
         )
-
-    paras.append(
-        "The links below are the same headlines summarized here — use them for full context "
-        "and attribution."
-    )
-    paras.append(
-        f"Across those pieces, {name} shows up where the facts overlap, not as a separate "
-        "narrative in every outlet."
-    )
-
-    fillers = [
-        (
-            "Editors often tighten the story after the first push, when principals comment "
-            "or league or agency sources weigh in."
-        ),
-        (
-            "Confirmed details and anonymous tips travel at different speeds; "
-            "treat single-source items accordingly."
-        ),
-        (
-            "When two or more outlets match on the same fact, that detail usually holds."
-        ),
-        (
-            "Late updates can reverse an earlier line — check timestamps on the source stories."
-        ),
-    ]
-    fi = 0
-    while _word_count(" ".join(paras)) < TARGET_MIN and fi < len(fillers):
-        paras.append(fillers[fi])
-        fi += 1
+    else:
+        paras.append(
+            f"Outlets have not filed a headline that clearly matches {name} yet."
+        )
+        paras.append(
+            f"When a story actually about {name} lands, this page will lead with that report."
+        )
 
     paras = [_strip_google_jargon(p) for p in paras if p.strip()]
     return enforce_keyword_density(paras, item.keyword)
 
 
-def _faq_fallback(keyword: str) -> list[dict[str, str]]:
+def _faq_fallback(keyword: str, _traffic: str = "") -> list[dict[str, str]]:
+    name = _keyword_label(keyword)
     return [
         {
-            "q": "What are outlets reporting?",
-            "a": "See the source links above for the full headlines and reporting.",
+            "q": f"What is the latest on {name}?",
+            "a": f"The lead paragraphs quote the outlet headlines that mention {name}.",
         },
         {
-            "q": "Could this change?",
-            "a": "Yes — new statements or filings often shift how the story is framed.",
+            "q": f"Where can I read more about {name}?",
+            "a": "Use the source links at the bottom of this page for the original reports.",
         },
     ]
 
@@ -257,6 +222,7 @@ def _call_llm(item: TrendItem) -> dict[str, Any]:
 
 
 def compose_article_html(item: TrendItem, image_url: str | None) -> tuple[str, list[dict], list[str]]:
+    item = align_trend_item(item)
     if SETTINGS.openai_api_key:
         try:
             data = _call_llm(item)
@@ -314,7 +280,11 @@ def topic_to_trend_item(topic: dict) -> TrendItem:
 
 
 def refresh_topic_body(topic: dict) -> dict:
-    """Rebuild ~300-word body from stored keyword + sources (runs on every export)."""
+    """Rebuild body from keyword-matched sources only (runs on every export)."""
+    topic["source_links"] = filter_source_links_json(
+        topic.get("keyword") or "",
+        topic.get("source_links"),
+    )
     item = topic_to_trend_item(topic)
     img = topic.get("image_url")
     body_html, faq, kw_list = compose_article_html(item, img)

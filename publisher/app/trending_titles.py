@@ -5,7 +5,7 @@ import re
 
 _ACRONYMS = {
     "us", "uk", "uae", "nfl", "nba", "mlb", "nhl", "ncaa", "gta", "tmz", "cia", "fbi",
-    "ai", "usa", "utep",
+    "ai", "usa", "utep", "vcu",
 }
 _SMALL = {"a", "an", "the", "and", "or", "for", "of", "in", "on", "at", "to", "vs", "v"}
 
