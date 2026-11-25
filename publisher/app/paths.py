@@ -8,4 +8,10 @@ _PKG = Path(__file__).resolve().parent.parent
 
 def project_root() -> Path:
     raw = os.environ.get("REPO_ROOT")
-    return Path(raw) if raw else _PKG
+    if raw:
+        root = Path(raw).resolve()
+        nested = root / "publisher"
+        if (nested / "app").is_dir() and (nested / "templates").is_dir():
+            return nested
+        return root
+    return _PKG
