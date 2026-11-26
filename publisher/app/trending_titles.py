@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import re
 
+from app.htmltext import decode_html_text
+
 _ACRONYMS = {
     "us", "uk", "uae", "nfl", "nba", "mlb", "nhl", "ncaa", "gta", "tmz", "cia", "fbi",
     "ai", "usa", "utep", "vcu",
@@ -40,7 +42,8 @@ def _news_titles_from_topic(topic: dict) -> list[str]:
 
 
 def _clean_news_line(title: str) -> str:
-    t = re.sub(r"\s+", " ", title.strip())
+    t = decode_html_text(title)
+    t = re.sub(r"\s+", " ", t.strip())
     t = re.split(r"\s*\|\s*", t)[0]
     return t.strip(" .")
 

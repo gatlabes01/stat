@@ -5,6 +5,8 @@ import re
 from dataclasses import dataclass
 from html import unescape
 
+from app.htmltext import decode_html_text
+
 import httpx
 
 _USER_AGENT = "Mozilla/5.0 (compatible; DetailzBot/1.0)"
@@ -74,7 +76,7 @@ def _article_chunk(html: str) -> str:
 
 
 def _clean_paragraph(text: str) -> str:
-    text = unescape(text)
+    text = decode_html_text(unescape(text))
     text = re.sub(r"<[^>]+>", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text

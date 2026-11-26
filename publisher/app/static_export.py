@@ -13,6 +13,7 @@ from app import database as db
 from app.config import SETTINGS
 from app.paths import project_root
 from app.format_dates import format_story_date, to_iso8601
+from app.htmltext import decode_html_text
 from app.seo_ping import ensure_indexnow_key_file
 from app.sync import COPYRIGHT_NOTICE
 
@@ -143,7 +144,10 @@ def export_static_site(export_dir: Path | None = None) -> dict:
 
     for row in stories:
         story = dict(row)
-        story["article_body"] = _rewrite_body(story.get("article_body") or "")
+        for key in ("title", "seo_title", "meta_description", "source_title"):
+            if story.get(key):
+                story[key] = decode_html_text(story[key])
+        story["article_body"] = _rewrite_body(decode_html_text(story.get("article_body") or ""))
         slug = story["slug"]
         dest = articles_root / slug
         dest.mkdir(parents=True, exist_ok=True)
@@ -175,6 +179,9 @@ def export_static_site(export_dir: Path | None = None) -> dict:
     index_stories = []
     for row in stories[:48]:
         s = dict(row)
+        for key in ("title", "seo_title", "meta_description"):
+            if s.get(key):
+                s[key] = decode_html_text(s[key])
         img = s.get("image_url") or ""
         if img.startswith("/") and SETTINGS.news_base_path not in img:
             s["image_url"] = _url_for(img if img.startswith("/media") else f"/media/{s.get('slug','')}/01.jpg")

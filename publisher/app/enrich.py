@@ -8,6 +8,7 @@ from typing import Any
 import httpx
 
 from app.compose import compose_tmz_html
+from app.htmltext import decode_html_text
 from app.config import SETTINGS
 from app.database import connect, get_story_by_id
 from app.images import cache_story_images
@@ -42,13 +43,13 @@ def _truncate(text: str, limit: int) -> str:
 
 
 def _strip_html(text: str) -> str:
-    return re.sub(r"<[^>]+>", "", text).strip()
+    return decode_html_text(re.sub(r"<[^>]+>", "", text)).strip()
 
 
 def _tmz_title(row, parsed) -> str:
     if parsed and parsed.headline:
-        return parsed.headline.strip()
-    return (row["title"] or row["source_title"] or "").strip()
+        return decode_html_text(parsed.headline).strip()
+    return decode_html_text(row["title"] or row["source_title"] or "").strip()
 
 
 def _tmz_description(row, parsed, title: str) -> str:
