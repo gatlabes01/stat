@@ -13,7 +13,7 @@ _SMALL = {"a", "an", "the", "and", "or", "for", "of", "in", "on", "at", "to", "v
 
 
 def smart_display(keyword: str) -> str:
-    raw = re.sub(r"\s+", " ", (keyword or "").strip())
+    raw = re.sub(r"\s+", " ", decode_html_text(keyword or "").strip())
     if not raw:
         return "This Topic"
     if raw.lower() in ("x men", "x-men"):

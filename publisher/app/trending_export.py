@@ -12,6 +12,7 @@ from app.config import SETTINGS
 from app.paths import project_root
 from app.format_dates import format_story_date, to_iso8601
 from app import trending_db as tdb
+from app.htmltext import decode_html_text
 from app.seo_ping import ensure_indexnow_key_file
 from app.sync import COPYRIGHT_NOTICE
 from app.trending_enrich import _faq_fallback, _faq_to_schema
@@ -68,7 +69,7 @@ def _title_from_disk_index(index_html: Path) -> str:
         html = index_html.read_text(encoding="utf-8", errors="ignore")
         m = re.search(r"<title>([^<]+)</title>", html, re.I)
         if m:
-            return m.group(1).split("|")[0].strip()
+            return decode_html_text(m.group(1).split("|")[0].strip())
     except OSError:
         pass
     return index_html.parent.name.replace("-", " ").title()
@@ -215,6 +216,17 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
         topic["published_label"] = format_story_date(topic.get("published_at"))
         topic["published_iso"] = to_iso8601(topic.get("published_at"))
         apply_polished_titles(topic)
+        for key in (
+            "display_title",
+            "h1",
+            "seo_title",
+            "meta_description",
+            "meta_description_short",
+            "list_deck",
+            "keyword",
+        ):
+            if topic.get(key):
+                topic[key] = decode_html_text(topic[key])
         try:
             faq_raw = json.loads(topic.get("faq_json") or "[]")
         except json.JSONDecodeError:

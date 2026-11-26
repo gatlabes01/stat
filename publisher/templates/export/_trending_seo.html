@@ -77,17 +77,6 @@
 <link rel="alternate" hreflang="x-default" href="{{ canonical }}">
 <script type="application/ld+json">{{ {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": site_name,
-  "url": site_url ~ "/",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": site_url ~ "/trending/?q={search_term_string}",
-    "query-input": "required name=search_term_string"
-  }
-}|tojson }}</script>
-<script type="application/ld+json">{{ {
-  "@context": "https://schema.org",
   "@type": "CollectionPage",
   "name": title,
   "description": description,
