@@ -20,6 +20,7 @@ def publish_trending_to_github(
     export_dir: Path | None = None,
     message: str | None = None,
     new_slugs: list[str] | None = None,
+    drop_slugs: list[str] | None = None,
 ) -> dict:
     root = Path(SETTINGS.repo_root).resolve()
     trend_dir = trending_root_dir(export_dir).resolve()
@@ -38,8 +39,17 @@ def publish_trending_to_github(
 
     commit_msg = message or f"Publish trending {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}"
 
+    reserved = {"archive", "media", "static", "articles"}
+    trend_rel = str(trend_dir.relative_to(root)).replace("\\", "/")
+    allow_delete = []
+    for slug in drop_slugs or []:
+        if not slug or slug in reserved or "/" in slug or "\\" in slug:
+            continue
+        allow_delete.append(f"{trend_rel}/{slug}")
+
     for rel in rel_paths:
-        add = git_add_keep(root, rel, force=(rel == db_rel))
+        extra = allow_delete if rel == trend_rel or rel.replace("\\", "/") == trend_rel else None
+        add = git_add_keep(root, rel, force=(rel == db_rel), allow_delete=extra)
         if add.returncode != 0:
             raise RuntimeError(add.stderr or add.stdout)
 

@@ -49,7 +49,10 @@ def run_once(*, deploy: str) -> None:
 
     if deploy == "github":
         urls = (sync_result.get("new_slugs") or []) + (sync_result.get("updated_slugs") or [])
-        pub = publish_trending_to_github(new_slugs=urls)
+        pub = publish_trending_to_github(
+            new_slugs=urls,
+            drop_slugs=export_result.get("dropped_no_thumb") or [],
+        )
         if pub.get("pushed"):
             log.info("Pushed: %s", pub.get("commit_message"))
             log.info("Sitemap ping: %s", pub.get("sitemap_ping"))

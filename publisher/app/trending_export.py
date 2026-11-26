@@ -236,8 +236,32 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
     media_src = project_root() / "data" / "trending_media"
     _seed_media_from_export(trend_out, media_src)
     export_media = trend_out / "media"
+    export_media.mkdir(parents=True, exist_ok=True)
+    if media_src.exists():
+        for slug_dir in media_src.iterdir():
+            if not slug_dir.is_dir():
+                continue
+            target = export_media / slug_dir.name
+            target.mkdir(parents=True, exist_ok=True)
+            for f in slug_dir.iterdir():
+                if f.is_file():
+                    shutil.copy2(f, target / f.name)
     for topic in stories_for_index:
         _ensure_topic_thumb(topic, media_src, export_media)
+
+    stories_for_index = [
+        t
+        for t in stories_for_index
+        if t.get("slug") and _local_thumb_file(t["slug"], media_src, export_media)
+    ]
+    dropped = []
+    for child in list(trend_out.iterdir()):
+        if not child.is_dir() or child.name in _SKIP_TOPIC_DIRS:
+            continue
+        if _local_thumb_file(child.name, media_src, export_media):
+            continue
+        shutil.rmtree(child, ignore_errors=True)
+        dropped.append(child.name)
 
     # Second pass: add related links now that index list is built
     for topic in stories_for_index:
@@ -322,19 +346,6 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
 
     ensure_indexnow_key_file(repo_root, SETTINGS.indexnow_key)
 
-    media_src = project_root() / "data" / "trending_media"
-    media_dest = trend_out / "media"
-    media_dest.mkdir(parents=True, exist_ok=True)
-    if media_src.exists():
-        for slug_dir in media_src.iterdir():
-            if not slug_dir.is_dir():
-                continue
-            target = media_dest / slug_dir.name
-            target.mkdir(parents=True, exist_ok=True)
-            for f in slug_dir.iterdir():
-                if f.is_file():
-                    shutil.copy2(f, target / f.name)
-
     static_src = project_root() / "static"
     if static_src.exists():
         dest_static = trend_out / "static"
@@ -365,6 +376,7 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
     return {
         "export_dir": str(trend_out),
         "articles": len(stories_for_index),
+        "dropped_no_thumb": dropped,
         "generated_at": generated,
         "trending_url": _abs_url("/"),
     }

@@ -1,20 +1,30 @@
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 import httpx
 
 from app.config import SETTINGS
-
 from app.paths import project_root
+from app.webp_image import save_as_webp
 
 MEDIA_ROOT = project_root() / "data" / "media"
+_LEGACY_EXTS = (".jpg", ".jpeg", ".png")
 
 
-def _extension(url: str) -> str:
-    m = re.search(r"\.(jpg|jpeg|png|webp)(?:\?|$)", url, re.I)
-    return f".{m.group(1).lower()}" if m else ".jpg"
+def _ensure_webp(dest_dir: Path, idx: int, data: bytes | None = None) -> Path | None:
+    filename = f"{idx:02d}.webp"
+    path = dest_dir / filename
+    if path.is_file() and path.stat().st_size > 0:
+        return path
+    for ext in _LEGACY_EXTS:
+        cand = dest_dir / f"{idx:02d}{ext}"
+        if cand.is_file() and cand.stat().st_size > 0:
+            if save_as_webp(cand.read_bytes(), path):
+                return path
+    if data and save_as_webp(data, path):
+        return path
+    return None
 
 
 def cache_story_images(slug: str, images: list[dict]) -> list[dict]:
@@ -32,33 +42,19 @@ def cache_story_images(slug: str, images: list[dict]) -> list[dict]:
     ) as client:
         for idx, img in enumerate(images, start=1):
             remote = img["url"]
-            filename = f"{idx:02d}.webp"
-            path = dest_dir / filename
-            if not path.exists():
-                from app.webp_image import save_as_webp
-
-                existing = None
-                for ext in (".jpg", ".jpeg", ".png"):
-                    cand = dest_dir / f"{idx:02d}{ext}"
-                    if cand.is_file():
-                        existing = cand
-                        break
-                converted = False
-                if existing:
-                    converted = save_as_webp(existing.read_bytes(), path)
-                if not converted:
-                    try:
-                        resp = client.get(remote)
-                        resp.raise_for_status()
-                        if not save_as_webp(resp.content, path):
-                            fallback = dest_dir / f"{idx:02d}{_extension(remote)}"
-                            fallback.write_bytes(resp.content)
-                            path = fallback
-                            filename = fallback.name
-                    except httpx.HTTPError:
-                        cached.append({**img, "local_url": remote, "cached": False})
-                        continue
+            path = _ensure_webp(dest_dir, idx)
+            if path is None:
+                try:
+                    resp = client.get(remote)
+                    resp.raise_for_status()
+                    path = _ensure_webp(dest_dir, idx, resp.content)
+                except httpx.HTTPError:
+                    path = None
+            if path is None:
+                cached.append({**img, "local_url": remote, "cached": False})
+                continue
             media_root = SETTINGS.news_base_path.rstrip("/")
+            filename = path.name
             local_url = f"{media_root}/media/{slug}/{filename}"
             cached.append(
                 {

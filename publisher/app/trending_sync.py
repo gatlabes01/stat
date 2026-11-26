@@ -138,13 +138,17 @@ def _cache_image(slug: str, url: str) -> str | None:
 
     dest_dir.mkdir(parents=True, exist_ok=True)
 
+    from app.webp_image import save_as_webp
+
     webp = dest_dir / "01.webp"
-    jpeg = dest_dir / "01.jpg"
+    if not (webp.is_file() and webp.stat().st_size > 0):
+        for name in ("01.jpg", "01.jpeg", "01.png"):
+            old = dest_dir / name
+            if old.is_file() and old.stat().st_size > 0 and save_as_webp(old.read_bytes(), webp):
+                break
 
     if webp.is_file() and webp.stat().st_size > 0:
         return f"/trending/media/{slug}/01.webp"
-    if jpeg.is_file() and jpeg.stat().st_size > 0:
-        return f"/trending/media/{slug}/01.jpg"
 
     try:
 
@@ -162,24 +166,16 @@ def _cache_image(slug: str, url: str) -> str | None:
 
             response.raise_for_status()
 
-        from app.webp_image import save_as_webp
-
         if save_as_webp(response.content, webp):
             return f"/trending/media/{slug}/01.webp"
 
-        jpeg.write_bytes(response.content)
-
-        return f"/trending/media/{slug}/01.jpg"
+        logger.warning("WebP convert failed for %s", slug)
+        return None
 
     except Exception as exc:
 
         logger.warning("Image cache failed for %s: %s", slug, exc)
-
-        if webp.is_file() and webp.stat().st_size > 0:
-            return f"/trending/media/{slug}/01.webp"
-        if jpeg.is_file() and jpeg.stat().st_size > 0:
-            return f"/trending/media/{slug}/01.jpg"
-        return url
+        return None
 
 
 
