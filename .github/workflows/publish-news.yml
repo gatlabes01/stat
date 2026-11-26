@@ -12,8 +12,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: publish-news
-  cancel-in-progress: true
+  group: detailz-git-push
+  cancel-in-progress: false
 
 jobs:
   publish:

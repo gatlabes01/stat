@@ -1,116 +1,80 @@
 name: Publish trending searches
 
-
-
 on:
-
   schedule:
-
-    # GitHub minimum interval is 5 minutes (UTC). All 12 slots per hour.
     - cron: "0,5,10,15,20,25,30,35,40,45,50,55 * * * *"
-
   workflow_dispatch:
-
   repository_dispatch:
-
     types: [publish-trending]
 
-
-
 permissions:
-
   contents: write
 
-
-
 concurrency:
-
-  group: publish-trending
-
-  # Do not cancel a running Trends pull (OpenAI + git). The next dispatch waits.
+  group: detailz-git-push
   cancel-in-progress: false
 
-
-
 jobs:
-
   publish:
-
     runs-on: ubuntu-latest
-
     steps:
-
       - uses: actions/checkout@v4
 
-
-
       - uses: actions/setup-python@v5
-
         with:
-
           python-version: "3.11"
-
           cache: pip
-
           cache-dependency-path: publisher/requirements.txt
 
-
-
       - uses: actions/cache@v4
-
         with:
-
           path: |
-
             publisher/data/trending.db
-
             publisher/data/trending_media
-
           key: detailz-trending-${{ github.run_id }}
-
           restore-keys: |
-
             detailz-trending-
 
-
-
       - name: Install dependencies
-
         run: pip install -r publisher/requirements.txt
 
-
+      - name: Download Google Trends RSS
+        run: |
+          mkdir -p publisher/data
+          UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
+          OUT=publisher/data/trends-rss.xml
+          curl -sS -L --retry 3 --retry-delay 2 -A "$UA" \
+            -H "Accept: application/rss+xml, application/xml, text/xml, */*" \
+            -o "$OUT" \
+            "https://trends.google.com/trending/rss?geo=US" || true
+          if ! grep -q "<item" "$OUT" 2>/dev/null; then
+            echo "Primary Trends RSS empty; trying daily RSS"
+            curl -sS -L --retry 3 --retry-delay 2 -A "$UA" \
+              -o "$OUT" \
+              "https://trends.google.com/trends/trendingsearches/daily/rss?geo=US" || true
+          fi
+          wc -c "$OUT" || true
+          head -c 400 "$OUT" || true
+          echo
+          grep -c "<item" "$OUT" || true
 
       - name: Sync trends, export, push
-
         env:
-
           SITE_URL: https://detailz.xyz
-
           TRENDING_BASE_PATH: /trending
-
           TRENDING_GEO: US
-
           TRENDING_RSS_URL: https://trends.google.com/trending/rss?geo=US
-
           TRENDING_MAX_PER_RUN: "15"
-
           TRENDING_MIN_TRAFFIC_SCORE: "0"
-
+          TRENDS_RSS_FILE: ${{ github.workspace }}/publisher/data/trends-rss.xml
           REPO_ROOT: ${{ github.workspace }}
-
           EXPORT_DIR: ${{ github.workspace }}
-
           GIT_REMOTE: origin
-
           GIT_BRANCH: main
-
+          PYTHONUNBUFFERED: "1"
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
-
         run: |
-
           git config user.name "github-actions[bot]"
-
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           python publisher/tools/trending_publisher.py --deploy github

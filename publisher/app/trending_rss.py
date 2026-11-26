@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 import logging
+import os
 import re
+import time
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
+from pathlib import Path
+
 import httpx
 
 from app.config import SETTINGS
@@ -62,44 +66,67 @@ def _text(el: ET.Element | None) -> str:
     return (el.text or "").strip() if el is not None else ""
 
 
+def _local(tag: str) -> str:
+    if tag.startswith("{") and "}" in tag:
+        return tag.split("}", 1)[1]
+    return tag
+
+
+def _child(el: ET.Element, name: str) -> ET.Element | None:
+    for child in el:
+        if _local(child.tag) == name:
+            return child
+    return None
+
+
+def _children(el: ET.Element, name: str) -> list[ET.Element]:
+    return [c for c in el if _local(c.tag) == name]
+
+
 def _news_items(item: ET.Element) -> list[TrendNewsItem]:
     out: list[TrendNewsItem] = []
-    for block in item.findall(f"{{{HT_NS}}}news_item"):
+    for block in _children(item, "news_item"):
         out.append(
             TrendNewsItem(
-                title=_text(block.find(f"{{{HT_NS}}}news_item_title")),
-                url=_text(block.find(f"{{{HT_NS}}}news_item_url")),
-                source=_text(block.find(f"{{{HT_NS}}}news_item_source")),
-                picture=_text(block.find(f"{{{HT_NS}}}news_item_picture")),
+                title=_text(_child(block, "news_item_title")),
+                url=_text(_child(block, "news_item_url")),
+                source=_text(_child(block, "news_item_source")),
+                picture=_text(_child(block, "news_item_picture")),
             )
         )
     return [n for n in out if n.title]
 
 
 def parse_trends_rss(xml_text: str) -> list[TrendItem]:
-    text = (xml_text or "").lstrip()
-    if not text.startswith("<"):
-        logger.warning("Trends response is not XML (%s chars)", len(text))
+    text = (xml_text or "").lstrip("\ufeff \t\r\n")
+    if "<item" not in text.lower():
+        logger.warning("Trends response has no <item> (%s chars)", len(text))
         return []
-    root = ET.fromstring(text)
+    try:
+        root = ET.fromstring(text)
+    except ET.ParseError as exc:
+        logger.warning("Trends XML parse error: %s", exc)
+        return []
     channel = root.find("channel")
+    if channel is None:
+        channel = _child(root, "channel")
     if channel is None:
         return []
     items: list[TrendItem] = []
-    for item in channel.findall("item"):
-        keyword = _text(item.find("title"))
+    for item in _children(channel, "item"):
+        keyword = _text(_child(item, "title"))
         if not keyword:
             continue
-        approx = _text(item.find(f"{{{HT_NS}}}approx_traffic"))
+        approx = _text(_child(item, "approx_traffic"))
         score = parse_traffic_score(approx)
         items.append(
             TrendItem(
                 keyword=keyword,
                 approx_traffic=approx,
                 traffic_score=score,
-                pub_date=_text(item.find("pubDate")),
-                picture=_text(item.find(f"{{{HT_NS}}}picture")),
-                picture_source=_text(item.find(f"{{{HT_NS}}}picture_source")),
+                pub_date=_text(_child(item, "pubDate")),
+                picture=_text(_child(item, "picture")),
+                picture_source=_text(_child(item, "picture_source")),
                 news=_news_items(item),
             )
         )
@@ -107,37 +134,61 @@ def parse_trends_rss(xml_text: str) -> list[TrendItem]:
     return items
 
 
-def _rss_url(geo: str) -> str:
-    url = SETTINGS.trending_rss_url
-    if "{geo}" in url:
-        return url.format(geo=geo)
-    if "geo=" not in url and geo:
-        return f"https://trends.google.com/trending/rss?geo={geo}"
-    return url
+def _rss_urls(geo: str) -> list[str]:
+    urls: list[str] = []
+    primary = SETTINGS.trending_rss_url
+    if "{geo}" in primary:
+        primary = primary.format(geo=geo)
+    urls.append(primary)
+    urls.append(f"https://trends.google.com/trending/rss?geo={geo}")
+    urls.append(f"https://trends.google.com/trends/trendingsearches/daily/rss?geo={geo}")
+    out: list[str] = []
+    for url in urls:
+        if url not in out:
+            out.append(url)
+    return out
+
+
+def _items_from_file(path: Path) -> list[TrendItem]:
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    items = parse_trends_rss(text)
+    logger.info("Trends RSS file %s: %s items", path, len(items))
+    return items
 
 
 def fetch_us_trending(geo: str | None = None) -> list[TrendItem]:
     geo = geo or SETTINGS.trending_geo
-    url = _rss_url(geo)
-    last_error: Exception | None = None
-    for attempt in range(3):
-        try:
-            with httpx.Client(timeout=45.0, follow_redirects=True) as client:
-                response = client.get(url, headers=_HEADERS)
-                response.raise_for_status()
-            items = parse_trends_rss(response.text)
+    file_raw = (os.environ.get("TRENDS_RSS_FILE") or "").strip()
+    if file_raw:
+        path = Path(file_raw)
+        if path.is_file():
+            items = _items_from_file(path)
             if items:
-                logger.info("Google Trends RSS: %s items (geo=%s)", len(items), geo)
                 return items
-            logger.warning(
-                "Google Trends RSS parsed 0 items (status=%s, %s chars, attempt %s)",
-                response.status_code,
-                len(response.text or ""),
-                attempt + 1,
-            )
-        except Exception as exc:
-            last_error = exc
-            logger.warning("Google Trends RSS fetch failed (attempt %s): %s", attempt + 1, exc)
+            logger.warning("TRENDS_RSS_FILE had 0 items, trying HTTP")
+
+    last_error: Exception | None = None
+    for url in _rss_urls(geo):
+        for attempt in range(3):
+            try:
+                with httpx.Client(timeout=45.0, follow_redirects=True) as client:
+                    response = client.get(url, headers=_HEADERS)
+                logger.info(
+                    "Trends GET %s -> %s (%s chars)",
+                    url,
+                    response.status_code,
+                    len(response.text or ""),
+                )
+                response.raise_for_status()
+                items = parse_trends_rss(response.text)
+                if items:
+                    logger.info("Google Trends RSS: %s items from %s", len(items), url)
+                    return items
+                logger.warning("Parsed 0 items from %s (attempt %s)", url, attempt + 1)
+            except Exception as exc:
+                last_error = exc
+                logger.warning("Trends fetch failed %s attempt %s: %s", url, attempt + 1, exc)
+                time.sleep(2)
     if last_error:
         raise last_error
-    raise RuntimeError(f"Google Trends RSS returned 0 items from {url}")
+    raise RuntimeError("Google Trends RSS returned 0 items from all URLs")
