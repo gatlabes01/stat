@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://detailz.xyz/trending/</loc><lastmod>2026-11-26</lastmod><changefreq>hourly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://detailz.xyz/trending/youtube-tv/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/dan-campbell/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/john-ohurley/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/cbs/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
@@ -11,6 +10,7 @@
   <url><loc>https://detailz.xyz/trending/father/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/penei-sewell/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/patrick-mahomes-stats/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/youtube-tv/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/chicago-thanksgiving-parade/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/diet/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/ras-tanura/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
