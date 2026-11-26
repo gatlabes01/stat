@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://detailz.xyz/trending/</loc><lastmod>2026-11-26</lastmod><changefreq>hourly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://detailz.xyz/trending/super-bowl-winners/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/zach-ertz/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/george-pickens/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/kavontae-turpin/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
@@ -9,7 +10,6 @@
   <url><loc>https://detailz.xyz/trending/jada-pinkett-smith/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/marshawn-lynch/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/zendaya/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/super-bowl-winners/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/new-movies-to-stream/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/glen-powell/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/chicago-thanksgiving-parade/</loc><lastmod>2026-11-26</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
