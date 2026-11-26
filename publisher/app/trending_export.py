@@ -74,6 +74,19 @@ def _title_from_disk_index(index_html: Path) -> str:
     return index_html.parent.name.replace("-", " ").title()
 
 
+def _ensure_topic_thumb(topic: dict, media_src: Path) -> None:
+    if topic.get("image_url"):
+        return
+    slug = topic.get("slug") or ""
+    if not slug:
+        return
+    for name in ("01.png", "01.jpg", "02.jpg", "02.png"):
+        if (media_src / slug / name).is_file():
+            topic["image_url"] = _url_for(f"/media/{slug}/{name}")
+            topic["image_url_abs"] = f"{SETTINGS.site_url.rstrip('/')}{topic['image_url']}"
+            return
+
+
 def _topics_on_disk(trend_out: Path, known_slugs: set[str]) -> list[dict]:
     """Include existing /trending/{slug}/ pages in hub, feed, and sitemap even if missing from DB."""
     extras: list[dict] = []
@@ -153,11 +166,6 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
     if legacy_articles.exists():
         shutil.rmtree(legacy_articles, ignore_errors=True)
 
-    archive_root = trend_out / "archive"
-    archive_root.mkdir(parents=True, exist_ok=True)
-
-    tb = SETTINGS.trending_base_path.strip("/")
-
     stories_for_index: list[dict] = []
     for row in rows:
         topic = dict(row)
@@ -187,21 +195,6 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
         topic["faq_schema"] = _faq_to_schema(faq_raw)
         topic["modified_iso"] = topic["published_iso"]
 
-        # Date archive symlink-style duplicate path for organization
-        pub = topic.get("published_at") or ""
-        day = pub[:10] if len(pub) >= 10 else datetime.now(timezone.utc).strftime("%Y-%m-%d")
-        y, m, d = day.split("-")
-        day_dir = archive_root / y / m / d / slug
-        day_dir.mkdir(parents=True, exist_ok=True)
-        (day_dir / "index.html").write_text(
-            f'<!DOCTYPE html><html><head><meta charset="utf-8">'
-            f'<meta http-equiv="refresh" content="0;url=/{tb}/{slug}/">'
-            f'<link rel="canonical" href="{canonical}">'
-            f"</head><body><p><a href=\"/{tb}/{slug}/\">"
-            f"{topic.get('seo_title', slug)}</a></p></body></html>",
-            encoding="utf-8",
-        )
-
         stories_for_index.append(topic)
 
     known = {t["slug"] for t in stories_for_index}
@@ -210,6 +203,10 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
         key=lambda t: (t.get("published_at") or t.get("created_at") or ""),
         reverse=True,
     )
+
+    media_src = project_root() / "data" / "trending_media"
+    for topic in stories_for_index:
+        _ensure_topic_thumb(topic, media_src)
 
     # Second pass: add related links now that index list is built
     for topic in stories_for_index:

@@ -1,5 +1,5 @@
 {% from "export/_adsense.html" import adsense_head %}
-{% macro voice_head(page_title, meta_description, canonical, extra_head='', body_class='') %}
+{% macro voice_head(page_title, meta_description, canonical, extra_head='', body_class='', active_nav='news', rss_href='') %}
 <!DOCTYPE html>
 <html lang="en-US" class="no-js no-svg">
 <head>
@@ -9,7 +9,7 @@
 <meta name="description" content="{{ meta_description }}">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="{{ canonical }}">
-<link rel="alternate" type="application/rss+xml" title="{{ site_name }} News" href="{{ abs_url('/feed.xml') }}">
+{% if rss_href %}<link rel="alternate" type="application/rss+xml" title="{{ site_name }}" href="{{ rss_href }}">{% endif %}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans%3A400%7CRoboto+Slab%3A400%2C300&amp;display=swap">
 <link rel="stylesheet" href="/wp-content/themes/voice/assets/css/min.css?ver=2.9.9">
 <link rel="stylesheet" href="{{ url_for('/static/news.css') }}">
@@ -40,8 +40,8 @@
       <li><a href="/">Home</a></li>
       <li><a href="/category/entertainment/">Entertainment</a></li>
       <li><a href="/category/celebs/">Celebs</a></li>
-      <li><a href="/trending/">Trending</a></li>
-      <li class="current-menu-item"><a href="{{ url_for('/') }}" aria-current="page">News</a></li>
+      <li{% if active_nav == 'trending' %} class="current-menu-item"{% endif %}><a href="/trending/"{% if active_nav == 'trending' %} aria-current="page"{% endif %}>Trending</a></li>
+      <li{% if active_nav == 'news' %} class="current-menu-item"{% endif %}><a href="/news/"{% if active_nav == 'news' %} aria-current="page"{% endif %}>News</a></li>
     </ul>
   </nav>
 </div>

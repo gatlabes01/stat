@@ -4,7 +4,7 @@
 {% set title = story['seo_title'] or story['title'] %}
 {% set description = story['meta_description_short'] or story['meta_description'] or title %}
 {% set seo = article_seo_head(title, description, canonical, story['image_url_abs'] or '', story['published_iso']) %}
-{{ voice_head(title, description, canonical, seo, 'wp-singular single single-post vce-single') }}
+{{ voice_head(title, description, canonical, seo, 'wp-singular single single-post vce-single', 'news', abs_url('/feed.xml')) }}
 {{ adsense_unit('vce-ad-below-header vce-ad-container') }}
 <div id="mks-breadcrumbs" class="container mks-bredcrumbs-container">
   <p id="breadcrumbs"><span><span><a href="/">Home</a></span> » <span><a href="{{ url_for('/') }}">News</a></span> » <span class="breadcrumb_last">{{ title }}</span></span></p>

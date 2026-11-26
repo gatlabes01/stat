@@ -72,7 +72,7 @@ def publish_to_github(
 
     rel_paths = [str(rel_site)]
 
-    for name in ("sitemap_index.xml", "sitemap.xml"):
+    for name in ("sitemap_index.xml", "sitemap.xml", "_redirects"):
 
         p = root / name
 

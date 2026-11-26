@@ -3,7 +3,7 @@
 ## Live URLs
 - Hub: `https://detailz.xyz/trending/`
 - Topics: `https://detailz.xyz/trending/{keyword-slug}/`
-- Date archive (redirects to canonical): `trending/archive/YYYY/MM/DD/{slug}/`
+- Legacy `trending/archive/...` URLs 301 to canonical via repo root `_redirects` (no new archive pages)
 - Sitemap: `https://detailz.xyz/trending/sitemap.xml`
 
 ## GitHub Action

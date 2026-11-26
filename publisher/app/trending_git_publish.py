@@ -28,7 +28,7 @@ def publish_trending_to_github(
     for rel in (trend_dir.relative_to(root),):
         rel_paths.append(str(rel))
     # Include root sitemap if trending export updated it
-    for name in ("sitemap_index.xml", "sitemap.xml"):
+    for name in ("sitemap_index.xml", "sitemap.xml", "_redirects"):
         p = root / name
         if p.exists():
             rel_paths.append(name)

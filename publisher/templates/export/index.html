@@ -3,7 +3,7 @@
 {% from "export/_seo.html" import index_seo_head %}
 {% set hub_title = site_name ~ ' News' %}
 {% set hub_seo = index_seo_head(hub_title, site_tagline, abs_url('/')) %}
-{{ voice_head(hub_title, site_tagline, abs_url('/'), hub_seo, 'archive category-news') }}
+{{ voice_head(hub_title, site_tagline, abs_url('/'), hub_seo, 'archive category-news', 'news', abs_url('/feed.xml')) }}
 {{ adsense_unit('vce-ad-below-header vce-ad-container') }}
 <div id="mks-breadcrumbs" class="container mks-bredcrumbs-container">
   <p id="breadcrumbs"><span><span><a href="/">Home</a></span> » <span class="breadcrumb_last">News</span></span></p>
