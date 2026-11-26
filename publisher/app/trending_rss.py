@@ -4,8 +4,6 @@ import logging
 import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
-from typing import Any
-
 import httpx
 
 from app.config import SETTINGS
@@ -13,6 +11,15 @@ from app.config import SETTINGS
 logger = logging.getLogger(__name__)
 
 HT_NS = "https://trends.google.com/trending/rss"
+_BROWSER_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+)
+_HEADERS = {
+    "User-Agent": _BROWSER_UA,
+    "Accept": "application/rss+xml, application/xml, text/xml, */*",
+    "Accept-Language": "en-US,en;q=0.9",
+}
 
 
 @dataclass
@@ -70,7 +77,11 @@ def _news_items(item: ET.Element) -> list[TrendNewsItem]:
 
 
 def parse_trends_rss(xml_text: str) -> list[TrendItem]:
-    root = ET.fromstring(xml_text)
+    text = (xml_text or "").lstrip()
+    if not text.startswith("<"):
+        logger.warning("Trends response is not XML (%s chars)", len(text))
+        return []
+    root = ET.fromstring(text)
     channel = root.find("channel")
     if channel is None:
         return []
@@ -96,14 +107,37 @@ def parse_trends_rss(xml_text: str) -> list[TrendItem]:
     return items
 
 
-def fetch_us_trending(geo: str | None = None) -> list[TrendItem]:
-    geo = geo or SETTINGS.trending_geo
+def _rss_url(geo: str) -> str:
     url = SETTINGS.trending_rss_url
     if "{geo}" in url:
-        url = url.format(geo=geo)
-    elif "geo=" not in url and geo:
-        url = f"https://trends.google.com/trending/rss?geo={geo}"
-    with httpx.Client(timeout=30.0, follow_redirects=True) as client:
-        response = client.get(url, headers={"User-Agent": "DetailzTrendingBot/1.0"})
-        response.raise_for_status()
-    return parse_trends_rss(response.text)
+        return url.format(geo=geo)
+    if "geo=" not in url and geo:
+        return f"https://trends.google.com/trending/rss?geo={geo}"
+    return url
+
+
+def fetch_us_trending(geo: str | None = None) -> list[TrendItem]:
+    geo = geo or SETTINGS.trending_geo
+    url = _rss_url(geo)
+    last_error: Exception | None = None
+    for attempt in range(3):
+        try:
+            with httpx.Client(timeout=45.0, follow_redirects=True) as client:
+                response = client.get(url, headers=_HEADERS)
+                response.raise_for_status()
+            items = parse_trends_rss(response.text)
+            if items:
+                logger.info("Google Trends RSS: %s items (geo=%s)", len(items), geo)
+                return items
+            logger.warning(
+                "Google Trends RSS parsed 0 items (status=%s, %s chars, attempt %s)",
+                response.status_code,
+                len(response.text or ""),
+                attempt + 1,
+            )
+        except Exception as exc:
+            last_error = exc
+            logger.warning("Google Trends RSS fetch failed (attempt %s): %s", attempt + 1, exc)
+    if last_error:
+        raise last_error
+    raise RuntimeError(f"Google Trends RSS returned 0 items from {url}")

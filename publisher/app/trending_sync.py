@@ -144,7 +144,15 @@ def _cache_image(slug: str, url: str) -> str | None:
 
         with httpx.Client(timeout=45.0, follow_redirects=True) as client:
 
-            response = client.get(url, headers={"User-Agent": "DetailzTrendingBot/1.0"})
+            response = client.get(
+                url,
+                headers={
+                    "User-Agent": (
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                        "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+                    )
+                },
+            )
 
             response.raise_for_status()
 

@@ -27,8 +27,8 @@ concurrency:
 
   group: publish-trending
 
-  # When triggered every minute, drop stale queued runs; keep latest Trends pull.
-  cancel-in-progress: true
+  # Do not cancel a running Trends pull (OpenAI + git). The next dispatch waits.
+  cancel-in-progress: false
 
 
 
@@ -60,11 +60,17 @@ jobs:
 
         with:
 
-          path: publisher/data/trending_media
+          path: |
 
-          key: detailz-trending-media-${{ runner.os }}
+            publisher/data/trending.db
 
-          restore-keys: detailz-trending-media-
+            publisher/data/trending_media
+
+          key: detailz-trending-${{ github.run_id }}
+
+          restore-keys: |
+
+            detailz-trending-
 
 
 
@@ -83,6 +89,8 @@ jobs:
           TRENDING_BASE_PATH: /trending
 
           TRENDING_GEO: US
+
+          TRENDING_RSS_URL: https://trends.google.com/trending/rss?geo=US
 
           TRENDING_MAX_PER_RUN: "15"
 

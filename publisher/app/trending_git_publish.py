@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -24,26 +25,21 @@ def publish_trending_to_github(
     if not (root / ".git").exists():
         raise RuntimeError(f"No git repo at {root}")
 
-    rel_paths = []
-    for rel in (trend_dir.relative_to(root),):
-        rel_paths.append(str(rel))
-    # Include root sitemap if trending export updated it
-    for name in ("sitemap_index.xml", "sitemap.xml", "_redirects"):
-        p = root / name
-        if p.exists():
-            rel_paths.append(name)
+    rel_paths = [str(trend_dir.relative_to(root))]
     key_file = ensure_indexnow_key_file(root, SETTINGS.indexnow_key)
     if key_file and key_file.exists():
         rel_paths.append(key_file.name)
 
     db_path = project_root() / "data" / "trending.db"
-    if db_path.is_file():
-        rel_paths.append(str(db_path.relative_to(root)))
+    db_rel = str(db_path.relative_to(root)) if db_path.is_file() else None
+    if db_rel:
+        rel_paths.append(db_rel)
 
     commit_msg = message or f"Publish trending {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}"
 
     for rel in rel_paths:
-        add = _run(["git", "add", rel], root)
+        add_cmd = ["git", "add", "-f", rel] if rel == db_rel else ["git", "add", rel]
+        add = _run(add_cmd, root)
         if add.returncode != 0:
             raise RuntimeError(add.stderr or add.stdout)
 
@@ -55,16 +51,25 @@ def publish_trending_to_github(
     if commit.returncode != 0:
         raise RuntimeError(commit.stderr or commit.stdout)
 
-    pull = _run(
-        ["git", "pull", "--rebase", SETTINGS.git_remote, SETTINGS.git_branch],
-        root,
-    )
-    if pull.returncode != 0:
-        raise RuntimeError(pull.stderr or pull.stdout or "git pull --rebase failed")
-
-    push = _run(["git", "push", SETTINGS.git_remote, SETTINGS.git_branch], root)
-    if push.returncode != 0:
-        raise RuntimeError(push.stderr or push.stdout)
+    last_err = ""
+    for attempt in range(5):
+        pull = _run(
+            ["git", "pull", "--rebase", SETTINGS.git_remote, SETTINGS.git_branch],
+            root,
+        )
+        if pull.returncode != 0:
+            last_err = pull.stderr or pull.stdout or "git pull --rebase failed"
+            _run(["git", "rebase", "--abort"], root)
+            time.sleep(2 * (attempt + 1))
+            continue
+        push = _run(["git", "push", SETTINGS.git_remote, SETTINGS.git_branch], root)
+        if push.returncode == 0:
+            last_err = ""
+            break
+        last_err = push.stderr or push.stdout or "git push failed"
+        time.sleep(2 * (attempt + 1))
+    if last_err:
+        raise RuntimeError(last_err)
 
     ping = ping_sitemap(_abs_url("/sitemap.xml"))
     ping.update({f"hub_{k}": v for k, v in ping_sitemap(f"{SETTINGS.site_url.rstrip('/')}/sitemap_index.xml").items()})
