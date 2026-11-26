@@ -74,17 +74,47 @@ def _title_from_disk_index(index_html: Path) -> str:
     return index_html.parent.name.replace("-", " ").title()
 
 
-def _ensure_topic_thumb(topic: dict, media_src: Path) -> None:
-    if topic.get("image_url"):
-        return
+def _local_thumb_file(slug: str, *roots: Path) -> str | None:
+    for root in roots:
+        if not root:
+            continue
+        for name in ("01.webp", "01.jpg", "01.png", "02.jpg", "02.png"):
+            if (root / slug / name).is_file():
+                return name
+    return None
+
+
+def _ensure_topic_thumb(topic: dict, *media_roots: Path) -> None:
     slug = topic.get("slug") or ""
     if not slug:
         return
-    for name in ("01.png", "01.jpg", "02.jpg", "02.png"):
-        if (media_src / slug / name).is_file():
-            topic["image_url"] = _url_for(f"/media/{slug}/{name}")
-            topic["image_url_abs"] = f"{SETTINGS.site_url.rstrip('/')}{topic['image_url']}"
-            return
+    img = (topic.get("image_url") or "").strip()
+    local_name = _local_thumb_file(slug, *media_roots)
+    if local_name:
+        topic["image_url"] = _url_for(f"/media/{slug}/{local_name}")
+        topic["image_url_abs"] = f"{SETTINGS.site_url.rstrip('/')}{topic['image_url']}"
+        return
+    if img.startswith("http"):
+        topic["image_url_abs"] = img
+        return
+    if img:
+        topic["image_url_abs"] = f"{SETTINGS.site_url.rstrip('/')}{img if img.startswith('/') else _url_for(img)}"
+
+
+def _seed_media_from_export(trend_out: Path, media_src: Path) -> None:
+    """Keep published /trending/media files even when Actions cache is empty."""
+    export_media = trend_out / "media"
+    if not export_media.is_dir():
+        return
+    media_src.mkdir(parents=True, exist_ok=True)
+    for slug_dir in export_media.iterdir():
+        if not slug_dir.is_dir():
+            continue
+        dest = media_src / slug_dir.name
+        dest.mkdir(parents=True, exist_ok=True)
+        for f in slug_dir.iterdir():
+            if f.is_file() and not (dest / f.name).is_file():
+                shutil.copy2(f, dest / f.name)
 
 
 def _topics_on_disk(trend_out: Path, known_slugs: set[str]) -> list[dict]:
@@ -204,8 +234,10 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
     )
 
     media_src = project_root() / "data" / "trending_media"
+    _seed_media_from_export(trend_out, media_src)
+    export_media = trend_out / "media"
     for topic in stories_for_index:
-        _ensure_topic_thumb(topic, media_src)
+        _ensure_topic_thumb(topic, media_src, export_media)
 
     # Second pass: add related links now that index list is built
     for topic in stories_for_index:
@@ -298,16 +330,18 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
             if not slug_dir.is_dir():
                 continue
             target = media_dest / slug_dir.name
-            if target.exists():
-                shutil.rmtree(target)
-            shutil.copytree(slug_dir, target)
+            target.mkdir(parents=True, exist_ok=True)
+            for f in slug_dir.iterdir():
+                if f.is_file():
+                    shutil.copy2(f, target / f.name)
 
     static_src = project_root() / "static"
     if static_src.exists():
         dest_static = trend_out / "static"
-        if dest_static.exists():
-            shutil.rmtree(dest_static)
-        shutil.copytree(static_src, dest_static)
+        dest_static.mkdir(parents=True, exist_ok=True)
+        for f in static_src.iterdir():
+            if f.is_file():
+                shutil.copy2(f, dest_static / f.name)
         news_css = static_src / "news.css"
         if news_css.exists():
             news_static = trend_out / "static"

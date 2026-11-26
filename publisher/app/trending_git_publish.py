@@ -7,6 +7,7 @@ from pathlib import Path
 
 from app.config import SETTINGS
 from app.seo_ping import ensure_indexnow_key_file, ping_sitemap, submit_indexnow
+from app.git_keep import git_add_keep
 from app.paths import project_root
 from app.trending_export import _abs_url, trending_root_dir
 
@@ -38,8 +39,7 @@ def publish_trending_to_github(
     commit_msg = message or f"Publish trending {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}"
 
     for rel in rel_paths:
-        add_cmd = ["git", "add", "-f", rel] if rel == db_rel else ["git", "add", rel]
-        add = _run(add_cmd, root)
+        add = git_add_keep(root, rel, force=(rel == db_rel))
         if add.returncode != 0:
             raise RuntimeError(add.stderr or add.stdout)
 

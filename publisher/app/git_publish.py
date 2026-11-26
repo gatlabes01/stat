@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from app.config import SETTINGS
+from app.git_keep import git_add_keep
 from app.seo_ping import ensure_indexnow_key_file, ping_sitemap, submit_indexnow
 from app.static_export import _abs_url, news_root_dir
 
@@ -43,7 +44,7 @@ def publish_to_github(
     commit_msg = message or f"Publish news {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}"
 
     for rel in rel_paths:
-        add = _run(["git", "add", rel], root)
+        add = git_add_keep(root, rel)
         if add.returncode != 0:
             raise RuntimeError(add.stderr or add.stdout)
 

@@ -138,7 +138,13 @@ def _cache_image(slug: str, url: str) -> str | None:
 
     dest_dir.mkdir(parents=True, exist_ok=True)
 
-    dest = dest_dir / "01.jpg"
+    webp = dest_dir / "01.webp"
+    jpeg = dest_dir / "01.jpg"
+
+    if webp.is_file() and webp.stat().st_size > 0:
+        return f"/trending/media/{slug}/01.webp"
+    if jpeg.is_file() and jpeg.stat().st_size > 0:
+        return f"/trending/media/{slug}/01.jpg"
 
     try:
 
@@ -156,7 +162,12 @@ def _cache_image(slug: str, url: str) -> str | None:
 
             response.raise_for_status()
 
-        dest.write_bytes(response.content)
+        from app.webp_image import save_as_webp
+
+        if save_as_webp(response.content, webp):
+            return f"/trending/media/{slug}/01.webp"
+
+        jpeg.write_bytes(response.content)
 
         return f"/trending/media/{slug}/01.jpg"
 
@@ -164,6 +175,10 @@ def _cache_image(slug: str, url: str) -> str | None:
 
         logger.warning("Image cache failed for %s: %s", slug, exc)
 
+        if webp.is_file() and webp.stat().st_size > 0:
+            return f"/trending/media/{slug}/01.webp"
+        if jpeg.is_file() and jpeg.stat().st_size > 0:
+            return f"/trending/media/{slug}/01.jpg"
         return url
 
 

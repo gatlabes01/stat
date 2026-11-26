@@ -72,6 +72,16 @@ def _rewrite_body(html: str) -> str:
     return html
 
 
+def _news_thumb_url(slug: str, *roots: Path) -> str | None:
+    for root in roots:
+        if not root:
+            continue
+        for name in ("01.webp", "01.jpg", "01.jpeg", "01.png"):
+            if (root / slug / name).is_file():
+                return _url_for(f"/media/{slug}/{name}")
+    return None
+
+
 def _copy_tree(src: Path, dest: Path) -> None:
     if dest.exists():
         shutil.rmtree(dest)
@@ -152,8 +162,10 @@ def export_static_site(export_dir: Path | None = None) -> dict:
         dest = articles_root / slug
         dest.mkdir(parents=True, exist_ok=True)
         canonical = _abs_url(f"/article/{slug}/")
-        img = story.get("image_url") or ""
+        local_thumb = _news_thumb_url(slug, news_out / "media", project_root() / "data" / "media")
+        img = local_thumb or story.get("image_url") or ""
         if img.startswith("http"):
+            story["image_url"] = img
             story["image_url_abs"] = img
         elif img:
             if not img.startswith(SETTINGS.news_base_path):
@@ -182,9 +194,14 @@ def export_static_site(export_dir: Path | None = None) -> dict:
         for key in ("title", "seo_title", "meta_description"):
             if s.get(key):
                 s[key] = decode_html_text(s[key])
-        img = s.get("image_url") or ""
+        local_thumb = _news_thumb_url(
+            s.get("slug") or "", news_out / "media", project_root() / "data" / "media"
+        )
+        img = local_thumb or s.get("image_url") or ""
         if img.startswith("/") and SETTINGS.news_base_path not in img:
-            s["image_url"] = _url_for(img if img.startswith("/media") else f"/media/{s.get('slug','')}/01.jpg")
+            s["image_url"] = _url_for(img if img.startswith("/media") else f"/media/{s.get('slug','')}/01.webp")
+        elif local_thumb:
+            s["image_url"] = local_thumb
         s["published_label"] = format_story_date(s.get("published_at"))
         index_stories.append(s)
 
@@ -239,9 +256,10 @@ def export_static_site(export_dir: Path | None = None) -> dict:
             if not slug_dir.is_dir():
                 continue
             target = media_dest / slug_dir.name
-            if target.exists():
-                shutil.rmtree(target)
-            shutil.copytree(slug_dir, target)
+            target.mkdir(parents=True, exist_ok=True)
+            for f in slug_dir.iterdir():
+                if f.is_file():
+                    shutil.copy2(f, target / f.name)
 
     repo_root = export_root()
     ensure_indexnow_key_file(repo_root, SETTINGS.indexnow_key)

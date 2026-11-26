@@ -33,7 +33,7 @@ jobs:
           path: |
             publisher/data/trending.db
             publisher/data/trending_media
-          key: detailz-trending-${{ github.run_id }}
+          key: detailz-trending-media-v2
           restore-keys: |
             detailz-trending-
 

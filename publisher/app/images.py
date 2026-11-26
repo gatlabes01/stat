@@ -32,17 +32,32 @@ def cache_story_images(slug: str, images: list[dict]) -> list[dict]:
     ) as client:
         for idx, img in enumerate(images, start=1):
             remote = img["url"]
-            ext = _extension(remote)
-            filename = f"{idx:02d}{ext}"
+            filename = f"{idx:02d}.webp"
             path = dest_dir / filename
             if not path.exists():
-                try:
-                    resp = client.get(remote)
-                    resp.raise_for_status()
-                    path.write_bytes(resp.content)
-                except httpx.HTTPError:
-                    cached.append({**img, "local_url": remote, "cached": False})
-                    continue
+                from app.webp_image import save_as_webp
+
+                existing = None
+                for ext in (".jpg", ".jpeg", ".png"):
+                    cand = dest_dir / f"{idx:02d}{ext}"
+                    if cand.is_file():
+                        existing = cand
+                        break
+                converted = False
+                if existing:
+                    converted = save_as_webp(existing.read_bytes(), path)
+                if not converted:
+                    try:
+                        resp = client.get(remote)
+                        resp.raise_for_status()
+                        if not save_as_webp(resp.content, path):
+                            fallback = dest_dir / f"{idx:02d}{_extension(remote)}"
+                            fallback.write_bytes(resp.content)
+                            path = fallback
+                            filename = fallback.name
+                    except httpx.HTTPError:
+                        cached.append({**img, "local_url": remote, "cached": False})
+                        continue
             media_root = SETTINGS.news_base_path.rstrip("/")
             local_url = f"{media_root}/media/{slug}/{filename}"
             cached.append(
