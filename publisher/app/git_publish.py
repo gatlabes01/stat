@@ -43,8 +43,10 @@ def publish_to_github(
 
     commit_msg = message or f"Publish news {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}"
 
+    news_rel = str(rel_site).replace("\\", "/")
     for rel in rel_paths:
-        add = git_add_keep(root, rel)
+        extra = [f"{news_rel}/article"] if rel.replace("\\", "/") == news_rel else None
+        add = git_add_keep(root, rel, allow_delete=extra)
         if add.returncode != 0:
             raise RuntimeError(add.stderr or add.stdout)
 
@@ -92,7 +94,7 @@ def publish_to_github(
     indexnow: dict = {"skipped": True}
     if SETTINGS.indexnow_key and new_slugs:
         host = SETTINGS.site_url.rstrip("/")
-        urls = [_abs_url(f"/article/{s}/") for s in new_slugs]
+        urls = [_abs_url(f"/{s}/") for s in new_slugs]
         indexnow = submit_indexnow(host, SETTINGS.indexnow_key, urls)
 
     return {

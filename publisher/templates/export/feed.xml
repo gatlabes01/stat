@@ -9,8 +9,8 @@
     {% for s in stories %}
     <item>
       <title>{{ s['seo_title'] or s['title'] }}</title>
-      <link>{{ abs_url('/article/' + s['slug'] + '/') }}</link>
-      <guid isPermaLink="true">{{ abs_url('/article/' + s['slug'] + '/') }}</guid>
+      <link>{{ abs_url('/' + s['slug'] + '/') }}</link>
+      <guid isPermaLink="true">{{ abs_url('/' + s['slug'] + '/') }}</guid>
       <pubDate>{{ s['published_at'] or '' }}</pubDate>
       <description>{{ s['meta_description'] or '' }}</description>
     </item>

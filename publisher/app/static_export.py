@@ -35,8 +35,11 @@ def news_root_dir(out: Path | None = None) -> Path:
     return base / _news_segment()
 
 
+_SKIP_STORY_DIRS = frozenset({"media", "static", "article", "articles", "archive"})
+
+
 def _url_for(path: str) -> str:
-    """Paths under the news section only (e.g. /news/article/foo/)."""
+    """Paths under the news section only (e.g. /news/foo/)."""
     nb = SETTINGS.news_base_path.rstrip("/")
     if path in ("", "/"):
         return f"{nb}/"
@@ -149,8 +152,6 @@ def export_static_site(export_dir: Path | None = None) -> dict:
     feed_tpl = env.get_template("export/feed.xml")
 
     news_out.mkdir(parents=True, exist_ok=True)
-    articles_root = news_out / "article"
-    articles_root.mkdir(parents=True, exist_ok=True)
 
     for row in stories:
         story = dict(row)
@@ -159,9 +160,11 @@ def export_static_site(export_dir: Path | None = None) -> dict:
                 story[key] = decode_html_text(story[key])
         story["article_body"] = _rewrite_body(decode_html_text(story.get("article_body") or ""))
         slug = story["slug"]
-        dest = articles_root / slug
+        if not slug or slug in _SKIP_STORY_DIRS:
+            continue
+        dest = news_out / slug
         dest.mkdir(parents=True, exist_ok=True)
-        canonical = _abs_url(f"/article/{slug}/")
+        canonical = _abs_url(f"/{slug}/")
         local_thumb = _news_thumb_url(slug, news_out / "media", project_root() / "data" / "media")
         img = local_thumb or story.get("image_url") or ""
         if img.startswith("http"):
@@ -224,7 +227,7 @@ def export_static_site(export_dir: Path | None = None) -> dict:
     ]
     for slug, published_at in slugs:
         lastmod = (published_at or "")[:10]
-        loc = _abs_url(f"/article/{slug}/")
+        loc = _abs_url(f"/{slug}/")
         sitemap_urls.append(
             f"  <url><loc>{loc}</loc><lastmod>{lastmod}</lastmod>"
             f"<changefreq>weekly</changefreq><priority>0.8</priority></url>"
@@ -243,6 +246,10 @@ def export_static_site(export_dir: Path | None = None) -> dict:
         f"Sitemap: {_abs_url('/sitemap.xml')}\n",
         encoding="utf-8",
     )
+
+    legacy_articles = news_out / "article"
+    if legacy_articles.is_dir():
+        shutil.rmtree(legacy_articles, ignore_errors=True)
 
     static_src = project_root() / "static"
     if static_src.exists():

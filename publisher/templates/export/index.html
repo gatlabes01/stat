@@ -20,14 +20,14 @@
           <article class="vce-post vce-lay-b hentry">
             {% if s['image_url'] %}
             <div class="meta-image">
-              <a href="{{ url_for('/article/' + s['slug'] + '/') }}" title="{{ s['seo_title'] or s['title'] }}">
+              <a href="{{ url_for('/' + s['slug'] + '/') }}" title="{{ s['seo_title'] or s['title'] }}">
                 <img width="375" height="195" src="{{ s['image_url'] }}" alt="{{ s['image_alt'] or s['seo_title'] }}" loading="lazy" class="attachment-vce-lay-b size-vce-lay-b wp-post-image">
               </a>
             </div>
             {% endif %}
             <header class="entry-header">
               <h2 class="entry-title">
-                <a href="{{ url_for('/article/' + s['slug'] + '/') }}" title="{{ s['seo_title'] or s['title'] }}">{{ s['seo_title'] or s['title'] }}</a>
+                <a href="{{ url_for('/' + s['slug'] + '/') }}" title="{{ s['seo_title'] or s['title'] }}">{{ s['seo_title'] or s['title'] }}</a>
               </h2>
               {% if s['published_label'] %}
               <div class="entry-meta"><div class="meta-item date"><span class="updated">{{ s['published_label'] }}</span></div></div>

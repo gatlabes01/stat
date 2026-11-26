@@ -1,4 +1,6 @@
 # Cloudflare Pages — use absolute targets for reliable Google fetches
 /trending https://detailz.xyz/trending/ 301
 /news https://detailz.xyz/news/ 301
+/news/article/:slug https://detailz.xyz/news/:slug/ 301
+/news/article/:slug/ https://detailz.xyz/news/:slug/ 301
 /trending/archive/:year/:month/:day/:slug https://detailz.xyz/trending/:slug 301
