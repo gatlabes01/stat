@@ -14,7 +14,7 @@ from app.format_dates import format_story_date, to_iso8601
 from app import trending_db as tdb
 from app.seo_ping import ensure_indexnow_key_file
 from app.sync import COPYRIGHT_NOTICE
-from app.trending_enrich import _faq_fallback, _faq_to_schema, refresh_topic_body
+from app.trending_enrich import _faq_fallback, _faq_to_schema
 from app.trending_links import pick_cluster_topics, pick_related_topics, pick_topic_tags
 from app.trending_titles import apply_polished_titles
 def export_root() -> Path:
@@ -169,7 +169,6 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
     stories_for_index: list[dict] = []
     for row in rows:
         topic = dict(row)
-        topic = refresh_topic_body(topic)
         topic["article_body"] = _rewrite_body(topic.get("article_body") or "")
         slug = topic["slug"]
         dest = trend_out / slug
@@ -225,6 +224,11 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
             if s["slug"] != slug
         ][:8]
         canonical = _abs_url(f"/{slug}/")
+        if not (topic.get("article_body") or (dest / "index.html").is_file()):
+            continue
+        if not topic.get("article_body"):
+            continue
+        dest.mkdir(parents=True, exist_ok=True)
         (dest / "index.html").write_text(
             article_tpl.render(
                 topic=topic,
@@ -306,7 +310,7 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
         shutil.copytree(static_src, dest_static)
         news_css = static_src / "news.css"
         if news_css.exists():
-            news_static = export_root() / "news" / "static"
+            news_static = trend_out / "static"
             news_static.mkdir(parents=True, exist_ok=True)
             shutil.copy2(news_css, news_static / "news.css")
 
@@ -323,8 +327,6 @@ def export_trending_site(export_dir: Path | None = None) -> dict:
         ),
         encoding="utf-8",
     )
-
-    _ensure_sitemap_index_entry(repo_root, lastmod)
 
     return {
         "export_dir": str(trend_out),

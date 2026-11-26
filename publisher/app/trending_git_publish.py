@@ -52,9 +52,21 @@ def publish_trending_to_github(
         raise RuntimeError(commit.stderr or commit.stdout)
 
     last_err = ""
-    for attempt in range(5):
+    for attempt in range(6):
+        fetch = _run(["git", "fetch", SETTINGS.git_remote, SETTINGS.git_branch], root)
+        if fetch.returncode != 0:
+            last_err = fetch.stderr or fetch.stdout or "git fetch failed"
+            time.sleep(2 * (attempt + 1))
+            continue
         pull = _run(
-            ["git", "pull", "--rebase", SETTINGS.git_remote, SETTINGS.git_branch],
+            [
+                "git",
+                "pull",
+                "--rebase",
+                "--autostash",
+                SETTINGS.git_remote,
+                SETTINGS.git_branch,
+            ],
             root,
         )
         if pull.returncode != 0:
@@ -72,7 +84,9 @@ def publish_trending_to_github(
         raise RuntimeError(last_err)
 
     ping = ping_sitemap(_abs_url("/sitemap.xml"))
-    ping.update({f"hub_{k}": v for k, v in ping_sitemap(f"{SETTINGS.site_url.rstrip('/')}/sitemap_index.xml").items()})
+    ping.update(
+        {f"hub_{k}": v for k, v in ping_sitemap(f"{SETTINGS.site_url.rstrip('/')}/sitemap_index.xml").items()}
+    )
     indexnow = {"skipped": True}
     if SETTINGS.indexnow_key and new_slugs:
         host = SETTINGS.site_url.replace("https://", "").replace("http://", "").strip("/")
