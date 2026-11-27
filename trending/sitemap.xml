@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://detailz.xyz/trending/</loc><lastmod>2026-11-27</lastmod><changefreq>hourly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://detailz.xyz/trending/jerry-jones/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/pitt-basketball/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/mike-pettine/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/nina-jacobson-mockingjay-split-regret/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
@@ -10,7 +11,6 @@
   <url><loc>https://detailz.xyz/trending/best-movies-to-stream-right-now/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/drake/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/zach-hickerson/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/jerry-jones/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/glen-powell/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/chicago-thanksgiving-parade/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/universal-studios-orlando/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
