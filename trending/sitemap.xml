@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://detailz.xyz/trending/</loc><lastmod>2026-11-27</lastmod><changefreq>hourly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://detailz.xyz/trending/kuwait-attack-today/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/bill-murray/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/deion-sanders/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/jd/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/playoff-picture-nfl/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
@@ -11,6 +9,8 @@
   <url><loc>https://detailz.xyz/trending/cox/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/andy-richter/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/jessica-biel/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/kuwait-attack-today/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/bill-murray/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/glen-powell/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/chicago-thanksgiving-parade/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/universal-studios-orlando/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
