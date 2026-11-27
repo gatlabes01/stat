@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://detailz.xyz/trending/</loc><lastmod>2026-11-27</lastmod><changefreq>hourly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://detailz.xyz/trending/bill-murray/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/deion-sanders/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/jd/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/playoff-picture-nfl/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/jessica-biel/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/from-tv-show-netflix-ranking/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/alphonso-smith/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/cox/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/andy-richter/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/kuwait-attack-today/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/bill-murray/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/cos/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/jd/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/jessica-biel/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/gta-6-pc-port/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/glen-powell/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/chicago-thanksgiving-parade/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/universal-studios-orlando/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
@@ -20,6 +19,7 @@
   <url><loc>https://detailz.xyz/trending/bears-qb/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/josh-allen-wife/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/sean-mcdermott/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/from-tv-show-netflix-ranking/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/super-bowl-winners/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/super-bowl-halftime-show-2027/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/nick-saban/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
@@ -162,6 +162,7 @@
   <url><loc>https://detailz.xyz/trending/st-brown/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/kavontae-turpin/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/ny-lottery/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/deion-sanders/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/michelle-obama/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/black-friday-deals-on-thanksgiving-day/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/kirk-herbstreit/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
@@ -230,6 +231,7 @@
   <url><loc>https://detailz.xyz/trending/kyle-monangai/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/why-do-the-lions-always-play-on-thanksgiving/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/brighton-u-craiova/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/playoff-picture-nfl/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/alabama-basketball/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/mike-pettine/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/tate-ratledge/</loc><lastmod>2026-11-27</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
