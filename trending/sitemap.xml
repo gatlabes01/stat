@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://detailz.xyz/trending/</loc><lastmod>2026-11-28</lastmod><changefreq>hourly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://detailz.xyz/trending/nba-cup-standings/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/tacko-fall/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/ghsa-football-scores/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/wemby/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
@@ -10,7 +11,6 @@
   <url><loc>https://detailz.xyz/trending/mls-playoff-bracket/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/the-rookie-north/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/atlas-futbol-club/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/nba-cup-standings/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/matvei-michkov/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/glen-powell/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/chicago-thanksgiving-parade/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
