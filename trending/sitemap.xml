@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://detailz.xyz/trending/</loc><lastmod>2026-11-28</lastmod><changefreq>hourly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://detailz.xyz/trending/tennessee-basketball/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/ryan-clark/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/heisman-odds/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/united-fidelity-bank/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/deaaron-fox/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/united-fidelity-bank/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/spurs-score/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/college-football-playoff-bracket/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/ut-austin-football/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/pat-kelsey/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/texas-college-football-standings/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/gonzaga-basketball/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/devon-dampier/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/creighton-basketball/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/mega-millions-numbers/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/heisman-odds/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/matvei-michkov/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/glen-powell/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/chicago-thanksgiving-parade/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
@@ -354,7 +354,6 @@
   <url><loc>https://detailz.xyz/trending/brighton-vs-craiova/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/hawks-vs-celtics/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/netflix-the-body-global-number-one/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/gonzaga-basketball/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/santiago-rodriguez/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/meta/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/delcy-rodriguez/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
@@ -498,6 +497,7 @@
   <url><loc>https://detailz.xyz/trending/gronk/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/hunting/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/red-wings-vs-blue-jackets/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/ryan-clark/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/canucks-vs-flyers/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/nets-vs-raptors/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/winter-weather-advisory/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
@@ -604,6 +604,7 @@
   <url><loc>https://detailz.xyz/trending/ms-state-vs-ole-miss/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/cameron-diaz/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/leon-cruz-azul/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/ut-austin-football/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/laporta/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/nicolas-cage/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/egg-bowl-score/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
@@ -691,10 +692,12 @@
   <url><loc>https://detailz.xyz/trending/mike-mccarthy-ice-cream-sandwiches/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/weather-chicago/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/shipley-eagles/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/creighton-basketball/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/green-bay-packers-statement-martha-ford/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/ut/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/elly-de-la-cruz/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/knicks-schedule/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/tennessee-basketball/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/will-ferrell/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/mammoth-vs-predators/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/mega-millions-drawing-tonight/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
