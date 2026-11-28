@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://detailz.xyz/trending/</loc><lastmod>2026-11-28</lastmod><changefreq>hourly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://detailz.xyz/trending/snow/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/hiromi-itoh/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://detailz.xyz/trending/steve-sarkisian/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/jose-alvarado/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/kris-murray/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/rafael-caro-quintero/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
@@ -11,6 +8,9 @@
   <url><loc>https://detailz.xyz/trending/knicks-vs-miami-heat-match-player-stats/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/heat-game/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/isaiah-joe/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/snow/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/hiromi-itoh/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://detailz.xyz/trending/steve-sarkisian/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/matvei-michkov/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/glen-powell/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
   <url><loc>https://detailz.xyz/trending/chicago-thanksgiving-parade/</loc><lastmod>2026-11-28</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>
